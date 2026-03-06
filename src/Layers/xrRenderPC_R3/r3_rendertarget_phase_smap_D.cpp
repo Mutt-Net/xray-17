@@ -45,17 +45,12 @@ void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 	// Stencil	- disable
 	RCache.set_Stencil(FALSE);
 
-	//	TODO: DX10:	Implement culling reverse for DX10
-	// Misc		- draw only front/back-faces
-	/*
-	if (SE_SUN_NEAR==sub_phase)			RCache.set_CullMode			( CULL_CCW	);	// near
-	else								{
-		if (RImplementation.o.HW_smap)	RCache.set_CullMode			( CULL_CW	);	// far, reversed
-		else							RCache.set_CullMode			( CULL_CCW	);	// far, front-faces
-	}
-	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable	( FALSE		);
-	else								RCache.set_ColorWriteEnable	( );
-	*/
+	// Misc — draw only front/back-faces
+	if (SE_SUN_NEAR == sub_phase)
+		RCache.set_CullMode(CULL_CCW);	// near
+	else
+		RCache.set_CullMode(CULL_CW);	// far, reversed
+	RCache.set_ColorWriteEnable(FALSE);
 }
 
 void CRenderTarget::phase_smap_direct_tsh(light* L, u32 sub_phase)

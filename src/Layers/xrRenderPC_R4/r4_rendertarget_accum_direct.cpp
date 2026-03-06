@@ -162,9 +162,7 @@ void CRenderTarget::accum_direct(u32 sub_phase)
 		//	0.5f + fTexelOffs,	0.5f + fTexelOffs,	fBias,			1.0f
 		//};
 		float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	TODO: DX10: Remove this when fix inverse culling for far region
-		float fBias = (SE_SUN_NEAR == sub_phase) ? (-ps_r2_sun_depth_near_bias) : ps_r2_sun_depth_far_bias;
+		float fBias = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_bias : ps_r2_sun_depth_far_bias;
 		Fmatrix m_TexelAdjust =
 		{
 			0.5f, 0.0f, 0.0f, 0.0f,
@@ -442,9 +440,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 		//	0.5f + fTexelOffs,	0.5f + fTexelOffs,	fBias,			1.0f
 		//};
 		float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	TODO: DX10: Remove this when fix inverse culling for far region
-		//		float			fBias				= (SE_SUN_NEAR==sub_phase)?(-ps_r2_sun_depth_near_bias):ps_r2_sun_depth_far_bias;
 		Fmatrix m_TexelAdjust =
 		{
 			0.5f, 0.0f, 0.0f, 0.0f,
@@ -868,9 +863,7 @@ void CRenderTarget::accum_direct_f(u32 sub_phase)
 		// texture adjustment matrix
 		float fTexelOffs = (.5f / float(RImplementation.o.smapsize));
 		float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	TODO: DX10: Remove this when fix inverse culling for far region
-		float fBias = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_bias : -ps_r2_sun_depth_far_bias;
+		float fBias = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_bias : ps_r2_sun_depth_far_bias;
 		Fmatrix m_TexelAdjust =
 		{
 			0.5f, 0.0f, 0.0f, 0.0f,
