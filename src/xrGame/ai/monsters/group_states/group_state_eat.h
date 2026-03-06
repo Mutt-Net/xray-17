@@ -34,3 +34,4 @@ private:
 };
 
 #include "group_state_eat_inline.h"
+
