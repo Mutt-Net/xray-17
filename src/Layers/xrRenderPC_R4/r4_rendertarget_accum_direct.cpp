@@ -43,7 +43,6 @@ void CRenderTarget::accum_direct(u32 sub_phase)
 	if ((uiElementIndex == SE_SUN_NEAR) && use_minmax_sm_this_frame())
 		uiElementIndex = SE_SUN_NEAR_MINMAX;
 
-	//	TODO: DX10: Remove half pixe offset
 	// *** assume accumulator setted up ***
 	light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
 
@@ -53,8 +52,8 @@ void CRenderTarget::accum_direct(u32 sub_phase)
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)
@@ -356,7 +355,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 	if ((uiElementIndex == SE_SUN_NEAR) && use_minmax_sm_this_frame())
 		uiElementIndex = SE_SUN_NEAR_MINMAX;
 
-	//	TODO: DX10: Remove half pixe offset
 	// *** assume accumulator setted up ***
 	light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
 
@@ -366,8 +364,8 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)
@@ -746,8 +744,7 @@ void CRenderTarget::accum_direct_blend()
 		else
 			u_setrt(rt_Accumulator,NULL,NULL, rt_MSAADepth->pZRT);
 
-		//	TODO: DX10: remove half pixel offset
-		// Common calc for quad-rendering
+			// Common calc for quad-rendering
 		u32 Offset;
 		u32 C = color_rgba(255, 255, 255, 255);
 		
@@ -830,8 +827,8 @@ void CRenderTarget::accum_direct_f(u32 sub_phase)
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)
@@ -1040,7 +1037,6 @@ void CRenderTarget::accum_direct_f(u32 sub_phase)
 void CRenderTarget::accum_direct_lum()
 {
 	PIX_EVENT(accum_direct_lum);
-	//	TODO: DX10: Remove half pixel offset
 	// Select target
 	phase_accumulator();
 
@@ -1053,8 +1049,8 @@ void CRenderTarget::accum_direct_lum()
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S; //, d_W = 1.f;
 
 	// Common constants (light-related)

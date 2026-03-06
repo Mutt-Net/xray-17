@@ -157,9 +157,9 @@ void CRenderTarget::phase_bloom()
 		float ddw = (1.f / _w) * ps_r2_ls_bloom_kernel_b;
 		float ddh = (1.f / _h) * ps_r2_ls_bloom_kernel_b;
 		Fvector2 p0;
-		p0.set(.5f / _w, .5f / _h);
+		p0.set(0.f, 0.f);
 		Fvector2 p1;
-		p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+		p1.set(1.f, 1.f);
 
 		v_build* pv = (v_build*)RCache.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
 		pv->p.set(EPS, float(_h + EPS), EPS, 1.f);

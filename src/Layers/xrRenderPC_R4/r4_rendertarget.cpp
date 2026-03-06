@@ -182,7 +182,6 @@ void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTa
 
 void CRenderTarget::u_stencil_optimize(eStencilOptimizeMode eSOM)
 {
-	//	TODO: DX10: remove half pixel offset?
 	VERIFY(RImplementation.o.nvstencil);
 	//RCache.set_ColorWriteEnable	(FALSE);
 	u32 Offset;

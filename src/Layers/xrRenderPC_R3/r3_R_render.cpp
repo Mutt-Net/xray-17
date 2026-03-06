@@ -202,8 +202,8 @@ void CRender::render_menu()
 	float _h = float(Device.dwHeight);
 	float d_Z = EPS_S;
 	float d_W = 1.f;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 
 	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, Target->g_menu->vb_stride, Offset);
 	pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);

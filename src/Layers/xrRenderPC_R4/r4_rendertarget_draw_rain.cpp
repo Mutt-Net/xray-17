@@ -9,8 +9,8 @@ void CRenderTarget::draw_rain(light& RainSetup)
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)

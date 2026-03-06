@@ -43,7 +43,6 @@ void CRenderTarget::phase_combine()
 {
 	PIX_EVENT(phase_combine);
 
-	//	TODO: DX10: Remove half poxel offset
 	bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
 	u32 Offset = 0;
@@ -465,8 +464,8 @@ void CRenderTarget::phase_combine()
 		float _h = float(Device.dwHeight);
 		float ddw = 1.f / _w;
 		float ddh = 1.f / _h;
-		p0.set(.5f / _w, .5f / _h);
-		p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+		p0.set(0.f, 0.f);
+		p1.set(1.f, 1.f);
 
 		// Fill vertex buffer
 		v_aa* pv = (v_aa*)RCache.Vertex.Lock(4, g_aa_AA->vb_stride, Offset);
@@ -700,7 +699,6 @@ void CRenderTarget::phase_combine_volumetric()
 	u32 Offset = 0;
 	//Fvector2	p0,p1;
 
-	//	TODO: DX10: Remove half pixel offset here
 
 	//u_setrt(rt_Generic_0,0,0,HW.pBaseZB );			// LDR RT
 	if (!RImplementation.o.dx10_msaa)
