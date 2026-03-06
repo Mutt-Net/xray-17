@@ -56,8 +56,6 @@ void CRenderTarget::phase_scene_begin()
 	                   D3DSTENCILOP_KEEP);
 
 	// Misc		- draw only front-faces
-	//	TODO: DX10: siable two-sided stencil here
-	//CHK_DX(HW.pDevice->SetRenderState	( D3DRS_TWOSIDEDSTENCILMODE,FALSE				));
 	RCache.set_CullMode(CULL_CCW);
 	RCache.set_ColorWriteEnable();
 }
