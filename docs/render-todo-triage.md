@@ -35,56 +35,34 @@ Remove the `+ .5f` and `0.5f /` bias terms. Gate on `HW.FeatureLevel >= D3D_FEAT
 
 ---
 
-## Group B — DX10 Rain Not Implemented
+## Group B — DX10 Rain Not Implemented ✓ RESOLVED (E2-T3, commit 62f0c7d0)
 
 **Class:** missing-feature | **Priority:** P1
 
-DX10 rain render pass is completely missing. The bounding sphere calculation
-and resolution reduction are unimplemented stubs, so rain doesn't render on DX10.
-
-| File (R3) | Line | File (R4) | Line | Notes |
-|-----------|------|-----------|------|-------|
-| r3_R_rain.cpp | 167–168 | r4_R_rain.cpp | 172–173 | Bounding sphere + resolution |
-| r3_R_render.cpp | 487 | r4_R_render.cpp | 526 | `Implement DX10 rain` |
-| r3_rendertarget.cpp | 582 | r4_rendertarget.cpp | 792 | `Create resources only when rain enabled` |
+Rain was already fully implemented (`render_rain`, `phase_rain`, `draw_rain` all
+present). The TODO comments were stale. Removed in sprint/s1.
 
 ---
 
-## Group C — NV DBT / Shadow Mapping
+## Group C — NV DBT / Shadow Mapping ✓ RESOLVED (E2-T4, commit 6fc6b71d)
 
 **Class:** bug | **Priority:** P2
 
-NV Depth Bounds Test is an NVIDIA extension unavailable on DX10. Multiple
-shadow accumulation passes check for an NV DBT analogue that was never
-implemented. Standard PCF is the correct replacement.
-
-| File (R3) | Line | File (R4) | Line | Notes |
-|-----------|------|-----------|------|-------|
-| r3_rendertarget_accum_direct.cpp | 278 | r4_rendertarget_accum_direct.cpp | 277 | Sun near smap |
-| r3_rendertarget_accum_direct.cpp | 334 | r4_rendertarget_accum_direct.cpp | 333 | — |
-| r3_rendertarget_accum_direct.cpp | 631 | r4_rendertarget_accum_direct.cpp | 629 | Sun far smap |
-| r3_rendertarget_accum_direct.cpp | 728 | r4_rendertarget_accum_direct.cpp | 726 | — |
-| r3_rendertarget_accum_direct.cpp | 1302 | r4_rendertarget_accum_direct.cpp | 1305 | Cascade |
-| r3_rendertarget_accum_direct.cpp | 1373 | r4_rendertarget_accum_direct.cpp | 1376 | — |
-| r3_rendertarget_draw_rain.cpp | 216, 392 | r4_rendertarget_draw_rain.cpp | 218, 396 | Rain shadow |
-| r3_rendertarget.cpp | 569, 1118 | r4_rendertarget.cpp | 779, 1339 | SMap resource creation |
-| r3_rendertarget_phase_smap_D.cpp | 4 | r4_rendertarget_phase_smap_D.cpp | 4 | Old smap check |
-| r3_rendertarget_phase_smap_S.cpp | 16 | r4_rendertarget_phase_smap_S.cpp | 16 | Spot smap check |
+NV Depth Bounds Test dead code and all stale HW_smap/old-smap TODOs removed.
+`u_DBT_enable`/`u_DBT_disable` cleaned up (Group F). `volume_range` zMin/zMax
+kept as they feed an active shader constant in `accum_direct_volumetric`.
+8 files, -253 lines in sprint/s1.
 
 ---
 
-## Group D — Inverse Culling (Far Region)
+## Group D — Inverse Culling (Far Region) ✓ RESOLVED (E2-T6/D, commit 9f8093b4)
 
 **Class:** bug | **Priority:** P2
 
-DX10 requires explicit rasterizer state for culling reversal; the DX9 approach
-of calling `SetRenderState(D3DRS_CULLMODE, ...)` doesn't exist. These stubs
-are in the far shadow region passes.
-
-| File (R3) | Line | File (R4) | Line |
-|-----------|------|-----------|------|
-| r3_rendertarget_accum_direct.cpp | 169, 481, 941 | r4_rendertarget_accum_direct.cpp | 167, 480, 939 |
-| r3_rendertarget_draw_rain.cpp | 121 | r4_rendertarget_draw_rain.cpp | 123 |
+Shadow map culling reversal activated: `phase_smap_direct` now sets `CULL_CCW`
+(near) / `CULL_CW` (far). Bias sign workarounds in `accum_direct` and
+`accum_direct_f` corrected to canonical values. Dead `/* */` rain tex-adjust
+block removed. 6 files, +16/-98 in sprint/s1.
 
 ---
 
@@ -109,18 +87,13 @@ hack".
 
 ---
 
-## Group F — Stencil Two-Sided / Scissor Rect
+## Group F — Stencil Two-Sided / Scissor Rect ✓ RESOLVED (E2-T6/F, commit 2b9e760d)
 
 **Class:** missing-feature | **Priority:** P2
 
-DX10 requires separate rasterizer state objects for two-sided stencil (no
-`D3DRS_TWOSIDEDSTENCILMODE`). Scissor rect enable/disable also requires
-rasterizer state in DX10.
-
-| File (R3) | Line | File (R4) | Line | Notes |
-|-----------|------|-----------|------|-------|
-| r3_rendertarget_phase_scene.cpp | 58 | r4_rendertarget_phase_scene.cpp | 59 | Two-sided stencil |
-| r3_rendertarget_enable_scissor.cpp | 47, 58 | r4_rendertarget_enable_scissor.cpp | 47, 58 | Scissor |
+`D3DRS_TWOSIDEDSTENCILMODE` dead code removed from `phase_scene_begin` (R3/R4).
+`u_DBT_enable`/`u_DBT_disable` stale DX9 implementation replaced with clear
+"not supported in DX10+" comments. 4 files, -30 lines in sprint/s1.
 
 ---
 
@@ -194,6 +167,6 @@ effects silently do nothing or fall back incorrectly.
 | P2 | ~60 | Sprint 3–4: shadow mapping, stencil, blenders |
 | P3 | ~20 | Sprint 6+: cleanup, perf investigation |
 
-**Sprint 2 targets (E2-T2, E2-T3):** Group A (half-pixel offset) + Group B (rain).
-**Sprint 3 targets (E2-T4, E2-T5, E2-T6):** Groups C, D, E, F.
+**Sprint 2 targets (E2-T2, E2-T3):** Group A (half-pixel offset) + Group B (rain). — B resolved (stale TODOs only).
+**Sprint 3 targets (E2-T4, E2-T5, E2-T6):** Groups C, D, E, F. — C, D, F resolved in sprint/s1. E still open.
 **Sprint 4+:** Groups G, H, I.
