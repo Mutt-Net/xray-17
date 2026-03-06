@@ -197,31 +197,6 @@ void CRenderTarget::draw_rain(light& RainSetup)
 		//RCache.set_c				("m_shadow",			m_shadow						);
 		//RCache.set_c				("m_sunmask",			m_clouds_shadow					);
 
-		/*
-		// nv-DBT
-		float zMin,zMax;
-		if (SE_SUN_NEAR==sub_phase)	{
-			zMin = 0;
-			zMax = ps_r2_sun_near;
-		} else {
-			extern float	OLES_SUN_LIMIT_27_01_07;
-			zMin = ps_r2_sun_near;
-			zMax = OLES_SUN_LIMIT_27_01_07;
-		}
-		center_pt.mad(Device.vCameraPosition,Device.vCameraDirection,zMin);	Device.mFullTransform.transform	(center_pt);
-		zMin = center_pt.z	;
-
-		center_pt.mad(Device.vCameraPosition,Device.vCameraDirection,zMax);	Device.mFullTransform.transform	(center_pt);
-		zMax = center_pt.z	;
-		*/
-
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		//		if (u_DBT_enable(zMin,zMax))	{
-		// z-test always
-		//			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-		//			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-		//		}
-
 		// Fetch4 : enable
 		//		if (RImplementation.o.HW_smap_FETCH4)	{
 		//. we hacked the shader to force smap on S0
@@ -393,8 +368,5 @@ void CRenderTarget::draw_rain(light& RainSetup)
 			}
 		}
 
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		// disable depth bounds
-		//		u_DBT_disable	();
 	}
 }

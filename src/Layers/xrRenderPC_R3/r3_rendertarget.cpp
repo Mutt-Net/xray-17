@@ -565,7 +565,6 @@ CRenderTarget::CRenderTarget()
 	}
 	else
 	{
-		//	TODO: DX10: Check if we need old-style SMap
 		VERIFY(!"Use HW SMAPs only!");
 		//u32	size					=RImplementation.o.smapsize	;
 		//rt_smap_surf.create			(r2_RT_smap_surf,			size,size,D3DFMT_R32F);
@@ -1111,9 +1110,6 @@ CRenderTarget::~CRenderTarget()
 	t_envmap_1->surface_set(NULL);
 	t_envmap_0.destroy();
 	t_envmap_1.destroy();
-
-	//	TODO: DX10: Check if we need old style SMAPs
-	//	_RELEASE					(rt_smap_ZB);
 
 	// Jitter
 	for (int it = 0; it < TEX_jitter_count; it++)
