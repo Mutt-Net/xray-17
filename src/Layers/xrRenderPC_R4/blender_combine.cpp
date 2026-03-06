@@ -190,7 +190,6 @@ CBlender_combine_msaa::~CBlender_combine_msaa()
 {
 }
 
-//	TODO: DX10: Implement CBlender_combine::Compile
 void CBlender_combine_msaa::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);

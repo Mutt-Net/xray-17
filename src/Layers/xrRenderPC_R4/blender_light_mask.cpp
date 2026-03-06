@@ -7,7 +7,6 @@ CBlender_accum_direct_mask::~CBlender_accum_direct_mask()
 {
 }
 
-//	TODO: DX10:	implement CBlender_accum_direct_mask::Compile
 void CBlender_accum_direct_mask::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
@@ -78,7 +77,6 @@ CBlender_accum_direct_mask_msaa::~CBlender_accum_direct_mask_msaa()
 {
 }
 
-//	TODO: DX10:	implement CBlender_accum_direct_mask::Compile
 void CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
