@@ -1009,8 +1009,12 @@ CRenderTarget::CRenderTarget()
 
 	// Build textures
 	{
-		// Testure for async sreenshots
+		// Texture for async screenshots — format must match the swapchain
+		// backbuffer so CopyResource succeeds in both SDR and HDR modes.
 		{
+			DXGI_SWAP_CHAIN_DESC scDesc;
+			HW.m_pSwapChain->GetDesc(&scDesc);
+
 			D3D_TEXTURE2D_DESC desc;
 			desc.Width = Device.dwWidth;
 			desc.Height = Device.dwHeight;
@@ -1018,7 +1022,7 @@ CRenderTarget::CRenderTarget()
 			desc.ArraySize = 1;
 			desc.SampleDesc.Count = 1;
 			desc.SampleDesc.Quality = 0;
-			desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
+			desc.Format = scDesc.BufferDesc.Format;
 			desc.Usage = D3D_USAGE_STAGING;
 			desc.BindFlags = 0;
 			desc.CPUAccessFlags = D3D_CPU_ACCESS_READ;
