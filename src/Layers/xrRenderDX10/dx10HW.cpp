@@ -229,8 +229,6 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
     R_ASSERT(CreateDeviceAndSwapChain);
     */
 
-    // TODO: DX10: Create appropriate initialization
-
     // General - select adapter and device
     BOOL bWindowed = (g_screenmode != 2);
 
@@ -366,9 +364,6 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
     // Back buffer
     //.	P.BackBufferWidth		= dwWidth;
     //. P.BackBufferHeight		= dwHeight;
-    //	TODO: DX10: implement dynamic format selection
-    //sd.BufferDesc.Format		= fTarget;
-
 #if defined(USE_DX11)
     sd.AlphaMode   = DXGI_ALPHA_MODE_IGNORE;
     sd.Format      = ps_r4_hdr10_on ? DXGI_FORMAT_R10G10B10A2_UNORM : DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -875,41 +870,6 @@ void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
     }
 }
 
-//	TODO: DX10: check if we need these
-/*
-u32	CHW::selectPresentInterval	()
-{
-    D3DCAPS9	caps;
-    pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
-
-    if (!psDeviceFlags.test(rsVSync))
-    {
-        if (caps.PresentationIntervals & D3DPRESENT_INTERVAL_IMMEDIATE)
-            return D3DPRESENT_INTERVAL_IMMEDIATE;
-        if (caps.PresentationIntervals & D3DPRESENT_INTERVAL_ONE)
-            return D3DPRESENT_INTERVAL_ONE;
-    }
-    return D3DPRESENT_INTERVAL_DEFAULT;
-}
-
-u32 CHW::selectGPU ()
-{
-    if (Caps.bForceGPU_SW) return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-
-    D3DCAPS9	caps;
-    pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
-
-    if(caps.DevCaps&D3DDEVCAPS_HWTRANSFORMANDLIGHT)
-    {
-        if (Caps.bForceGPU_NonPure)	return D3DCREATE_HARDWARE_VERTEXPROCESSING;
-        else {
-			if (caps.DevCaps&D3DDEVCAPS_PUREDEVICE) return D3DCREATE_HARDWARE_VERTEXPROCESSING|D3DCREATE_PUREDEVICE;
-			else return D3DCREATE_HARDWARE_VERTEXPROCESSING;
-        }
-        // return D3DCREATE_MIXED_VERTEXPROCESSING;
-    } else return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-}
-*/
 DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
 {
     DXGI_RATIONAL res;
@@ -1071,7 +1031,6 @@ void CHW::OnAppDeactivate()
 
 BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
 {
-    //	TODO: DX10: implement stub for this code.
     VERIFY(!"Implement CHW::support");
     /*
 	HRESULT hr		= pD3D->CheckDeviceFormat(DevAdapter,DevT,Caps.fTarget,usage,(D3DRESOURCETYPE)type,fmt);

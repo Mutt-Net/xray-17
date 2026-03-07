@@ -8,7 +8,6 @@
 IC void CBackend::set_xform(u32 ID, const Fmatrix& M)
 {
 	stat.xforms ++;
-	//	TODO: DX10: Implement CBackend::set_xform
 	//VERIFY(!"Implement CBackend::set_xform");
 }
 

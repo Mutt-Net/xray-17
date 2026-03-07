@@ -174,8 +174,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
 
 		// duplicate and zero-terminate
 		IReader* file = FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
-		if (!file)
+			if (!file)
 		{
 			string1024 tmp;
 			xr_sprintf(tmp, "DX10: %s is missing. Replace with stub_default.vs", cname);
@@ -286,12 +285,9 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
 
 		// duplicate and zero-terminate
 		IReader* file = FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
-		if (!file)
+			if (!file)
 		{
 			string1024 tmp;
-			//	TODO: HACK: Test failure
-			//Memory.mem_compact();
 			xr_sprintf(tmp, "DX10: %s is missing. Replace with stub_default.ps", cname);
 			Msg(tmp);
 			strconcat(sizeof(cname), cname, ::Render->getShaderPath(), "stub_default", ".ps");
@@ -386,12 +382,9 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
 
 		// duplicate and zero-terminate
 		IReader* file = FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
-		if (!file)
+			if (!file)
 		{
 			string1024 tmp;
-			//	TODO: HACK: Test failure
-			//Memory.mem_compact();
 			xr_sprintf(tmp, "DX10: %s is missing. Replace with stub_default.gs", cname);
 			Msg(tmp);
 			strconcat(sizeof(cname), cname, ::Render->getShaderPath(), "stub_default", ".gs");

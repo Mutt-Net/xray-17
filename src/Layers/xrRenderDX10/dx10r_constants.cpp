@@ -147,7 +147,6 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 			break;
 		case D3D10_SVC_OBJECT:
 			{
-				//	TODO: DX10: 
 				VERIFY(!"Implement shader object parsing.");
 				/*
 				switch (T->Type)
