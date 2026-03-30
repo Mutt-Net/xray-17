@@ -11,7 +11,7 @@ Generated: 2026-03-06. Scope: xrRenderPC_R3, xrRenderPC_R4, xrRenderDX10.
 
 ---
 
-## Group A — Half-Pixel Offset (DX10 NDC correction)
+## Group A — Half-Pixel Offset (DX10 NDC correction) ✓ RESOLVED (commit 05b96961)
 
 **Class:** bug | **Priority:** P1
 
@@ -66,7 +66,7 @@ block removed. 6 files, +16/-98 in sprint/s1.
 
 ---
 
-## Group E — HDR Texture Format Incompatibility (DX11)
+## Group E — HDR Texture Format Incompatibility (DX11) ✓ RESOLVED (E2-T5, commit 527180c6)
 
 **Class:** bug | **Priority:** P1
 
@@ -85,6 +85,10 @@ hack".
 | r4_rendertarget_phase_combine.cpp | 30 | P1 — HDR screenshot broken on DX11 |
 | r4_rendertarget.cpp | 564 | P2 — R11G11B10F format approach flagged |
 
+`t_ss_async` staging texture now queries `DXGI_SWAP_CHAIN_DESC` at creation and
+uses `scDesc.BufferDesc.Format`, matching the swapchain format in both SDR and HDR
+modes. `CopyResource` format mismatch eliminated.
+
 ---
 
 ## Group F — Stencil Two-Sided / Scissor Rect ✓ RESOLVED (E2-T6/F, commit 2b9e760d)
@@ -97,7 +101,7 @@ hack".
 
 ---
 
-## Group G — Blender Missing Implementations
+## Group G — Blender Missing Implementations ✓ RESOLVED (commit 3a92cc8a)
 
 **Class:** missing-feature | **Priority:** P2
 
@@ -114,11 +118,18 @@ effects silently do nothing or fall back incorrectly.
 | blender_light_point.cpp | R3:141 / R4:147 | Point lights |
 | blender_light_reflected.cpp | R3:38 / R4:38 | Reflections |
 
+All blender `Compile()` methods (both base and `_msaa` variants) were already fully
+implemented with `r_dx10Texture` / `r_dx10Sampler` calls. The TODO markers predated
+the DX10 implementations and were stale across all six blenders. Removed in sprint/s1.
+
 ---
 
-## Group H — xrRenderDX10 Device Layer
+## Group H — xrRenderDX10 Device Layer ✓ CLEANUP DONE (commit 3d8bc3fe)
 
 **Class:** mixed | **Priority:** P2–P3
+
+Stale TODO noise removed in sprint/s1. Remaining items below are real open issues
+documented as knowledge comments in the source. No further sprint/s1 action.
 
 | File | Line | Class | Priority | Notes |
 |------|------|-------|----------|-------|
@@ -143,9 +154,12 @@ effects silently do nothing or fall back incorrectly.
 
 ---
 
-## Group I — Performance / Miscellaneous
+## Group I — Performance / Miscellaneous ✓ CLEANUP DONE (sprint/s1)
 
 **Class:** mixed | **Priority:** P3
+
+All TODO markers converted to knowledge comments in sprint/s1. Items remain valid
+future work but are not blocking.
 
 | File | Line | Notes |
 |------|------|-------|
@@ -163,9 +177,9 @@ effects silently do nothing or fall back incorrectly.
 
 | Priority | Count | Action |
 |----------|-------|--------|
-| P1 | ~18 | Sprint 2–3: half-pixel offset, rain, HDR copy |
-| P2 | ~60 | Sprint 3–4: shadow mapping, stencil, blenders |
-| P3 | ~20 | Sprint 6+: cleanup, perf investigation |
+| P1 | ~18 | ✓ Resolved: half-pixel offset (A), rain stale (B), HDR copy (E). |
+| P2 | ~60 | ✓ Resolved: shadow mapping (C,D), stencil (F), blenders (G). Open: H items. |
+| P3 | ~20 | Documented as knowledge comments (H, I). |
 
 **Sprint 2 targets (E2-T2, E2-T3):** Group A (half-pixel offset) + Group B (rain). — B resolved (stale TODOs only).
 **Sprint 3 targets (E2-T4, E2-T5, E2-T6):** Groups C, D, E, F. — C, D, F resolved in sprint/s1. E still open.
