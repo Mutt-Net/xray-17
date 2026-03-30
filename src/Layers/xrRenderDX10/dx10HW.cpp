@@ -366,14 +366,11 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
     // Back buffer
     //.	P.BackBufferWidth		= dwWidth;
     //. P.BackBufferHeight		= dwHeight;
-    //	TODO: DX10: implement dynamic format selection
-    //sd.BufferDesc.Format		= fTarget;
-
 #if defined(USE_DX11)
     sd.AlphaMode   = DXGI_ALPHA_MODE_IGNORE;
     sd.Format      = ps_r4_hdr10_on ? DXGI_FORMAT_R10G10B10A2_UNORM : DXGI_FORMAT_R8G8B8A8_UNORM;
 #elif defined(USE_DX10)
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sd.BufferDesc.Format = ps_r4_hdr10_on ? DXGI_FORMAT_R10G10B10A2_UNORM : DXGI_FORMAT_R8G8B8A8_UNORM;
 #endif
     sd.BufferCount = 2;
 
@@ -530,6 +527,43 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
         FeatureLevel = D3D_FEATURE_LEVEL_10_1;
     }
     pContext1 = pDevice1;
+
+    // setup colorspace for DX10 path
+    if (ps_r4_hdr10_on)
+    {
+        IDXGISwapChain3* swapchain3 = nullptr;
+        if (SUCCEEDED(m_pSwapChain->QueryInterface(&swapchain3)))
+        {
+            UINT color_space_supported = 0;
+            if (SUCCEEDED(swapchain3->CheckColorSpaceSupport(
+                    DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020, &color_space_supported))
+                && (color_space_supported & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT))
+            {
+                R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
+            }
+            else
+            {
+                Log("HDR10 color space unsupported on DX10 path, HDR10 output unavailable");
+                R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
+            }
+            swapchain3->Release();
+        }
+        else
+        {
+            // IDXGISwapChain3 unavailable (DXGI < 1.4). Format is R10G10B10A2_UNORM
+            // but colorspace defaults to SDR. HDR10 tone mapping will not engage.
+            Log("HDR10 requested but IDXGISwapChain3 unavailable on DX10 path");
+        }
+    }
+    else
+    {
+        IDXGISwapChain3* swapchain3 = nullptr;
+        if (SUCCEEDED(m_pSwapChain->QueryInterface(&swapchain3)))
+        {
+            R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
+            swapchain3->Release();
+        }
+    }
 #endif
 
     /*
