@@ -101,7 +101,13 @@ namespace dx10TextureUtils
 		//D3DDECLTYPE_DEC3N Not available 
 		//D3DDECLTYPE_FLOAT16_2 DXGI_FORMAT_R16G16_FLOAT 
 		//D3DDECLTYPE_FLOAT16_4 DXGI_FORMAT_R16G16B16A16_FLOAT 
-		{D3DFMT_A2R10G10B10, DXGI_FORMAT_R10G10B10A2_UNORM}, // TODO: gross hack
+		// D3DFMT_A2R10G10B10 and DXGI_FORMAT_R10G10B10A2_UNORM differ in channel order
+		// (A2R10G10B10: R[29:20] B[9:0] vs R10G10B10A2: R[31:22] B[11:2]).
+		// This mapping is correct for DX10/11-generated data (which uses RGBA ordering)
+		// but would be wrong for D3D9-authored textures. No such textures exist in this path.
+		{D3DFMT_A2R10G10B10, DXGI_FORMAT_R10G10B10A2_UNORM},
+		// D3DFMT_A2B10G10R10 has matching channel order to DXGI_FORMAT_R10G10B10A2_UNORM.
+		{D3DFMT_A2B10G10R10, DXGI_FORMAT_R10G10B10A2_UNORM},
 	};
 
 	DXGI_FORMAT ConvertTextureFormat(D3DFORMAT dx9FMT)
