@@ -420,13 +420,11 @@ IC void CBackend::set_ZFunc(u32 _func)
 
 IC void CBackend::set_AlphaRef(u32 _value)
 {
-	//	TODO: DX10: Implement rasterizer state update to support alpha ref
-	VERIFY(!"Not implemented.");
-	//if (alpha_ref != _value)
-	//{ 
-	//	alpha_ref = _value;
-	//	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF,_value));
-	//}
+	// DX10+: no hardware alpha-ref state. Alpha test is performed in shader
+	// via clip(). Alpha ref for shader-driven state (dx10StateManager) is
+	// handled separately via BindAlphaRef / set_c. This path (via
+	// dxUIRender::SetAlphaRef) has no active callers in DX10/11 paths.
+	(void)_value;
 }
 
 IC void CBackend::set_ColorWriteEnable(u32 _mask)
