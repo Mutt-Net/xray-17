@@ -36,8 +36,6 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount)
 	R_ASSERT(HW.pDevice && Name && Name[0] && w && h);
 	_order = CPU::GetCLK(); //Device.GetTimerGlobal()->GetElapsed_clk();
 
-	//HRESULT		_hr;
-
 	dwWidth = w;
 	dwHeight = h;
 	fmt = f;
@@ -81,24 +79,11 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount)
 
 	bool bUseAsDepth = (usage == D3DUSAGE_RENDERTARGET) ? false : true;
 
-	// Validate render-target usage
-	//_hr = HW.pD3D->CheckDeviceFormat(
-	//HW.DevAdapter,
-	//HW.DevT,
-	//HW.Caps.fTarget,
-	//usage,
-	//D3DRTYPE_TEXTURE,
-	//f
-	//);
-	//	TODO: DX10: implement format support check
-	//UINT	FormatSupport;
-	//_hr = HW.pDevice->CheckFormatSupport( dx10FMT, &FormatSupport);
-	//if (FAILED(_hr)) return;
-	//if (!(
-	//(FormatSupport&D3Dxx_FORMAT_SUPPORT_TEXTURE2D) 
-	//&&	(FormatSupport&(bUseAsDepth?D3Dxx_FORMAT_SUPPORT_DEPTH_STENCIL:D3Dxx_FORMAT_SUPPORT_RENDER_TARGET))
-	//))
-	//return;
+	// Validate format supports the required usage on this device.
+	UINT FormatSupport = 0;
+	if (FAILED(HW.pDevice->CheckFormatSupport(dx10FMT, &FormatSupport))) return;
+	if (!(FormatSupport & D3D_FORMAT_SUPPORT_TEXTURE2D)) return;
+	if (!(FormatSupport & (bUseAsDepth ? D3D_FORMAT_SUPPORT_DEPTH_STENCIL : D3D_FORMAT_SUPPORT_RENDER_TARGET))) return;
 
 	// Try to create texture/surface
 	DEV->Evict();
