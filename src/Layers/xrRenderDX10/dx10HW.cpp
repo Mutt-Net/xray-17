@@ -407,15 +407,15 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
 	//else					P.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
 
 	if (bWindowed) {
-        // TODO: fix this, shouldn't just default to 60hz
+		// Windowed mode: DXGI ignores RefreshRate; {0,0} is the neutral value.
 #if defined(USE_DX11)
-        sd_fullscreen.RefreshRate.Numerator   = 60;
-        sd_fullscreen.RefreshRate.Denominator = 1;
+		sd_fullscreen.RefreshRate.Numerator   = 0;
+		sd_fullscreen.RefreshRate.Denominator = 0;
 #elif defined(USE_DX10)
-        sd.BufferDesc.RefreshRate.Numerator = 60;
-		sd.BufferDesc.RefreshRate.Denominator = 1;
+		sd.BufferDesc.RefreshRate.Numerator = 0;
+		sd.BufferDesc.RefreshRate.Denominator = 0;
 #endif
-    } else {
+	} else {
 #if defined(USE_DX11)
 		sd_fullscreen.RefreshRate = selectRefresh(sd.Width, sd.Height, sd.Format);
 #elif defined(USE_DX10)
@@ -704,13 +704,13 @@ void CHW::Reset(HWND hwnd)
 
 	if (bWindowed)
 	{
+		// Windowed mode: DXGI ignores RefreshRate; {0,0} is the neutral value.
 #if defined(USE_DX11)
-        // TODO: fix
-		cd_fs.RefreshRate.Numerator = 60;
-        cd_fs.RefreshRate.Denominator = 1;
+		cd_fs.RefreshRate.Numerator = 0;
+		cd_fs.RefreshRate.Denominator = 0;
 #elif defined(USE_DX10)
-		desc.RefreshRate.Numerator = 60;
-		desc.RefreshRate.Denominator = 1;
+		desc.RefreshRate.Numerator = 0;
+		desc.RefreshRate.Denominator = 0;
 #endif
 	}
 	else {
