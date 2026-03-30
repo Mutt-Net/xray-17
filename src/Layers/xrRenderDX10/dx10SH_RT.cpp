@@ -236,7 +236,7 @@ void CRTC::create(LPCSTR Name, u32 size, D3DFORMAT f)
     dwSize = size;
     fmt    = f;
 
-    if (size > D3D10_REQ_TEXTURECUBE_DIMENSION) return;
+    if (size > D3D_REQ_TEXTURECUBE_DIMENSION) return;
 
     DXGI_FORMAT dx10FMT = dx10TextureUtils::ConvertTextureFormat(f);
 
