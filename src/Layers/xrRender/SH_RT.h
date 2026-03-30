@@ -50,12 +50,11 @@ struct resptrcode_crt : public resptr_base<CRT>
 
 typedef resptr_core<CRT, resptrcode_crt> ref_rt;
 
-/*	//	DX10 cut 
 //////////////////////////////////////////////////////////////////////////
 class		CRTC	:	public xr_resource_named	{
 public:
-	IDirect3DCubeTexture9*	pSurface;
-	IDirect3DSurface9*		pRT[6];
+	ID3DTexture2D*			pSurface;
+	ID3DRenderTargetView*	pRT[6];
 	ref_texture				pTexture;
 
 	u32						dwSize;
@@ -70,7 +69,7 @@ public:
 	void				destroy			();
 	void				reset_begin		();
 	void				reset_end		();
-	IC BOOL				valid			()	{ return !pTexture; }
+	IC BOOL				valid			()	{ return !!pTexture; }
 };
 struct 		resptrcode_crtc	: public resptr_base<CRTC>
 {
@@ -78,6 +77,5 @@ struct 		resptrcode_crtc	: public resptr_base<CRTC>
 	void				destroy			()	{ _set(NULL);		}
 };
 typedef	resptr_core<CRTC,resptrcode_crtc>		ref_rtc;
-*/
 
 #endif // SH_RT_H
