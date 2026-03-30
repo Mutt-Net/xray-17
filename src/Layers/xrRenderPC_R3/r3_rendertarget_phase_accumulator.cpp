@@ -63,24 +63,19 @@ void CRenderTarget::phase_accumulator()
 
 void CRenderTarget::phase_vol_accumulator()
 {
+	// Volumetric accumulation is additive blending — no depth write or clip required.
+	// Passing NULL for depth eliminates the D3D debug layer error when MSAA is active:
+	// RT sample count must match depth-stencil sample count.
 	if (!m_bHasActiveVolumetric)
 	{
 		m_bHasActiveVolumetric = true;
-		if (!RImplementation.o.dx10_msaa)
-			u_setrt(rt_Generic_2, NULL,NULL, HW.pBaseZB);
-		else
-			u_setrt(rt_Generic_2, NULL,NULL, RImplementation.Target->rt_MSAADepth->pZRT);
-		//u32		clr4clearVol				= color_rgba(0,0,0,0);	// 0x00
-		//CHK_DX	(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clearVol, 1.0f, 0L));
+		u_setrt(rt_Generic_2, NULL,NULL, NULL);
 		FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 		HW.pDevice->ClearRenderTargetView(rt_Generic_2->pRT, ColorRGBA);
 	}
 	else
 	{
-		if (!RImplementation.o.dx10_msaa)
-			u_setrt(rt_Generic_2, NULL,NULL, HW.pBaseZB);
-		else
-			u_setrt(rt_Generic_2, NULL,NULL, RImplementation.Target->rt_MSAADepth->pZRT);
+		u_setrt(rt_Generic_2, NULL,NULL, NULL);
 	}
 
 	RCache.set_Stencil(FALSE);

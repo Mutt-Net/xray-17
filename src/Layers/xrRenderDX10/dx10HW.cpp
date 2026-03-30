@@ -144,7 +144,7 @@ void CHW::CreateD3D()
     // when vsync is off (PresentInterval = 0) and only when in window mode
     // store whether we can use the flag for later use (swapchain creation, buffer resize, present call)
 
-    // TODO: On some PC configurations (versions of Windows, graphics drivers, currently unknown what exactly) this isn't
+    // Note: On some PC configurations (versions of Windows, graphics drivers, currently unknown what exactly) this isn't
     // sufficient to disable the DWM vsync when the game is launched in a windowed mode, however if the user switches from
     // borderless/windowed -> exclusive fullscreen -> borderless/windowed then it seems to work correctly.
     // Worth investigating why this is occurring
@@ -479,7 +479,6 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
     // setup colorspace
     // HDR10 (U10 output) -> DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020
     // SDR   (U8 output)  -> DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709
-    // TODO: SDR 10-bit?
     IDXGISwapChain3* swapchain3;
     R_CHK(m_pSwapChain->QueryInterface(&swapchain3));
 

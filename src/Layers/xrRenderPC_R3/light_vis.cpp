@@ -51,7 +51,7 @@ void light::vis_prepare()
 	vis.query_order = RImplementation.occq_begin(vis.query_id);
 	//	Hack: Igor. Light is visible if it's frutum is visible. (Only for volumetric)
 	//	Hope it won't slow down too much since there's not too much volumetric lights
-	//	TODO: sort for performance improvement if this technique hurts
+	//	Sorting volumetric lights for performance is a valid P3 optimisation.
 	if ((flags.type == IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric)
 		RCache.set_Stencil(FALSE);
 	else

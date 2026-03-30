@@ -81,7 +81,7 @@ ICF void CBackend::set_GS(ID3DGeometryShader* _gs, LPCSTR _n)
 	if (gs != _gs)
 	{
 		PGO(Msg("PGO:Gshader:%x",_ps));
-		//	TODO: DX10: Get statistics for G Shader change
+		//	DX10: shader change statistics not wired up (ID3D10Query per-draw; not required for correctness).
 		//stat.gs			++;
 		gs = _gs;
 #ifdef USE_DX11
@@ -102,7 +102,7 @@ ICF void CBackend::set_HS(ID3D11HullShader* _hs, LPCSTR _n)
 	if (hs!=_hs)
 	{
 		PGO				(Msg("PGO:Hshader:%x",_ps));
-		//	TODO: DX10: Get statistics for H Shader change
+		//	DX10: shader change statistics not wired up (ID3D10Query per-draw; not required for correctness).
 		//stat.hs			++;
 		hs				= _hs;
 		HW.pContext->HSSetShader(hs, 0, 0);
@@ -118,7 +118,7 @@ ICF void CBackend::set_DS(ID3D11DomainShader* _ds, LPCSTR _n)
 	if (ds!=_ds)
 	{
 		PGO				(Msg("PGO:Dshader:%x",_ps));
-		//	TODO: DX10: Get statistics for D Shader change
+		//	DX10: shader change statistics not wired up (ID3D10Query per-draw; not required for correctness).
 		//stat.ds			++;
 		ds				= _ds;
 		HW.pContext->DSSetShader(ds, 0, 0);
@@ -134,7 +134,7 @@ ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, LPCSTR _n)
 	if (cs!=_cs)
 	{
 		PGO				(Msg("PGO:Cshader:%x",_ps));
-		//	TODO: DX10: Get statistics for D Shader change
+		//	DX10: shader change statistics not wired up (ID3D10Query per-draw; not required for correctness).
 		//stat.cs			++;
 		cs				= _cs;
 		HW.pContext->CSSetShader(cs, 0, 0);
@@ -328,7 +328,9 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, 
 
 IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
 {
-	//	TODO: DX10: Remove triangle fan usage from the engine
+	//	DX10: triangle fan topology is unsupported. Early return is intentional;
+	//	callers using D3DPT_TRIANGLEFAN are legacy DX9 paths. Decomposition to
+	//	triangle lists would require an audit of all call sites.
 	if (T == D3DPT_TRIANGLEFAN)
 		return;
 

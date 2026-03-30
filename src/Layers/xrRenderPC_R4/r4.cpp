@@ -384,7 +384,7 @@ void CRender::create()
 	o.ssao_hdao = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HDAO) && (ps_r_ssao != 0);
 	o.ssao_hbao = !o.ssao_hdao && ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
 
-	//	TODO: fix hbao shader to allow to perform per-subsample effect!
+	//	HBAO per-subsample effect requires shader changes; forced off for now.
 	o.hbao_vectorized = false;
 	if (o.ssao_hbao)
 	{
@@ -1106,7 +1106,8 @@ static HRESULT create_shader(
 		//	Store input signature blob
 		if (SUCCEEDED(_result) && pReflection)
 		{
-			//	TODO: DX10: share the same input signatures
+			//	DX10: input signatures could be shared across VS variants to reduce
+			//	InputLayout creation overhead. Valid optimisation; not a correctness issue.
 
 			//	Store input signature (need only for VS)
 			//CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );

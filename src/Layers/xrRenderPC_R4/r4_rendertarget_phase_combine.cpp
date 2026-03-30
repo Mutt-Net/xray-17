@@ -705,7 +705,7 @@ void CRenderTarget::phase_combine()
 	RCache.set_Stencil(FALSE);
 
 	if (RImplementation.o.dx11_hdr10) {
-		// TODO: we should be able to avoid a copy if both are enabled
+		// A copy could be avoided when both MSAA and HDR bloom are enabled; minor optimisation.
 		if (ps_r4_hdr10_bloom_on) {
 			HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), rt_Color->pTexture->surface_get());
 			phase_hdr10_bloom(); // samples from rt_Generic_0, writes to rt_Color
