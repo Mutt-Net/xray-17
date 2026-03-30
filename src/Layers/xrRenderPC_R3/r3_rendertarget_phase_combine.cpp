@@ -11,27 +11,19 @@
 
 void CRenderTarget::DoAsyncScreenshot()
 {
-	//	Igor: screenshot will not have postprocess applied.
-	//	TODO: fox that later
+	//	Screenshot will not have postprocess applied.
 	if (RImplementation.m_bMakeAsyncSS)
 	{
 		HRESULT hr;
 
-		//	HACK: unbind RT. CopyResourcess needs src and targetr to be unbound.
+		//	HACK: unbind RT. CopyResource needs src and target to be unbound.
 		//u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 
-		//ID3DTexture2D *pTex = 0;
-		//if (RImplementation.o.dx10_msaa)
-		//	pTex = rt_Generic->pSurface;
-		//else
-		//	pTex = rt_Color->pSurface;
-
-
-		//HW.pDevice->CopyResource( t_ss_async, pTex );
 		ID3D10Texture2D* pBuffer;
-		hr = HW.m_pSwapChain->GetBuffer(0, __uuidof( ID3D10Texture2D), (LPVOID*)&pBuffer);
+		hr = HW.m_pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&pBuffer);
+		VERIFY(SUCCEEDED(hr));
 		HW.pDevice->CopyResource(t_ss_async, pBuffer);
-
+		pBuffer->Release();
 
 		RImplementation.m_bMakeAsyncSS = false;
 	}
