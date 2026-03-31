@@ -528,40 +528,43 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
     }
     pContext1 = pDevice1;
 
-    // setup colorspace for DX10 path
-    if (ps_r4_hdr10_on)
+    if (!FAILED(R))
     {
-        IDXGISwapChain3* swapchain3 = nullptr;
-        if (SUCCEEDED(m_pSwapChain->QueryInterface(&swapchain3)))
+        // setup colorspace for DX10 path
+        if (ps_r4_hdr10_on)
         {
-            UINT color_space_supported = 0;
-            if (SUCCEEDED(swapchain3->CheckColorSpaceSupport(
-                    DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020, &color_space_supported))
-                && (color_space_supported & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT))
+            IDXGISwapChain3* swapchain3 = nullptr;
+            if (SUCCEEDED(m_pSwapChain->QueryInterface(&swapchain3)))
             {
-                R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
+                UINT color_space_supported = 0;
+                if (SUCCEEDED(swapchain3->CheckColorSpaceSupport(
+                        DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020, &color_space_supported))
+                    && (color_space_supported & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT))
+                {
+                    R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
+                }
+                else
+                {
+                    Log("HDR10 color space unsupported on DX10 path, HDR10 output unavailable");
+                    R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
+                }
+                _RELEASE(swapchain3);
             }
             else
             {
-                Log("HDR10 color space unsupported on DX10 path, HDR10 output unavailable");
-                R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
+                // IDXGISwapChain3 unavailable (DXGI < 1.4). Format is R10G10B10A2_UNORM
+                // but colorspace defaults to SDR. HDR10 tone mapping will not engage.
+                Log("HDR10 requested but IDXGISwapChain3 unavailable on DX10 path");
             }
-            swapchain3->Release();
         }
         else
         {
-            // IDXGISwapChain3 unavailable (DXGI < 1.4). Format is R10G10B10A2_UNORM
-            // but colorspace defaults to SDR. HDR10 tone mapping will not engage.
-            Log("HDR10 requested but IDXGISwapChain3 unavailable on DX10 path");
-        }
-    }
-    else
-    {
-        IDXGISwapChain3* swapchain3 = nullptr;
-        if (SUCCEEDED(m_pSwapChain->QueryInterface(&swapchain3)))
-        {
-            R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
-            swapchain3->Release();
+            IDXGISwapChain3* swapchain3 = nullptr;
+            if (SUCCEEDED(m_pSwapChain->QueryInterface(&swapchain3)))
+            {
+                R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
+                _RELEASE(swapchain3);
+            }
         }
     }
 #endif
