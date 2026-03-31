@@ -6,6 +6,8 @@
 #ifdef USE_DX11
 # include <d3d11_4.h>
 # include <dxgi1_5.h>
+#elif defined(USE_DX10)
+# include <dxgi1_4.h>
 #endif
 
 #include <D3DX10core.h>
