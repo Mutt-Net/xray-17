@@ -261,6 +261,7 @@ void CRTC::create(LPCSTR Name, u32 size, D3DFORMAT f)
     desc.MiscFlags        = D3D_RESOURCE_MISC_TEXTURECUBE;
 
     CHK_DX(HW.pDevice->CreateTexture2D(&desc, NULL, &pSurface));
+    if (!pSurface) return;
     HW.stats_manager.increment_stats_rtarget(pSurface);
 
     for (u32 face = 0; face < 6; ++face)

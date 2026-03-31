@@ -50,6 +50,7 @@ struct resptrcode_crt : public resptr_base<CRT>
 
 typedef resptr_core<CRT, resptrcode_crt> ref_rt;
 
+#if defined(USE_DX10) || defined(USE_DX11)
 //////////////////////////////////////////////////////////////////////////
 class		CRTC	:	public xr_resource_named	{
 public:
@@ -77,5 +78,6 @@ struct 		resptrcode_crtc	: public resptr_base<CRTC>
 	void				destroy			()	{ _set(NULL);		}
 };
 typedef	resptr_core<CRTC,resptrcode_crtc>		ref_rtc;
+#endif	//	USE_DX10 || USE_DX11
 
 #endif // SH_RT_H
