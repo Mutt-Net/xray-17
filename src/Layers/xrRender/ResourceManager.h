@@ -38,7 +38,7 @@ public:
 	DEFINE_MAP_PRED(const char*, CMatrix*, map_Matrix, map_MatrixIt, str_pred);
 	DEFINE_MAP_PRED(const char*, CConstant*, map_Constant, map_ConstantIt, str_pred);
 	DEFINE_MAP_PRED(const char*, CRT*, map_RT, map_RTIt, str_pred);
-	//	DX10 cut DEFINE_MAP_PRED(const char*,CRTC*,			map_RTC,		map_RTCIt,			str_pred);
+	DEFINE_MAP_PRED(const char*,CRTC*,			map_RTC,		map_RTCIt,			str_pred);
 	DEFINE_MAP_PRED(const char*, SVS*, map_VS, map_VSIt, str_pred);
 #if defined(USE_DX10) || defined(USE_DX11)
 	DEFINE_MAP_PRED(const char*,SGS*,			map_GS,			map_GSIt,			str_pred);
@@ -58,7 +58,7 @@ private:
 	map_Matrix m_matrices;
 	map_Constant m_constants;
 	map_RT m_rtargets;
-	//	DX10 cut map_RTC												m_rtargets_c;
+	map_RTC												m_rtargets_c;
 	map_VS m_vs;
 	map_PS m_ps;
 #if defined(USE_DX10) || defined(USE_DX11)
@@ -148,8 +148,8 @@ public:
 #endif
 	void _DeleteRT(const CRT* RT);
 
-	//	DX10 cut CRTC*							_CreateRTC			(LPCSTR Name, u32 size,	D3DFORMAT f);
-	//	DX10 cut void							_DeleteRTC			(const CRTC*	RT	);
+	CRTC*							_CreateRTC			(LPCSTR Name, u32 size,	D3DFORMAT f);
+	void							_DeleteRTC			(const CRTC*	RT	);
 #if defined(USE_DX10) || defined(USE_DX11)
 	SGS*							_CreateGS			(LPCSTR Name);
 	void							_DeleteGS			(const SGS*	GS	);
