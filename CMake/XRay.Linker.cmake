@@ -25,6 +25,20 @@ set(CMAKE_EXE_LINKER_FLAGS_PROFILED "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 string(REPLACE "/INCREMENTAL:NO" "/INCREMENTAL" CMAKE_EXE_LINKER_FLAGS_PROFILED "${CMAKE_EXE_LINKER_FLAGS_PROFILED}")
 string(REPLACE "/LTCG" "" CMAKE_EXE_LINKER_FLAGS_PROFILED "${CMAKE_EXE_LINKER_FLAGS_PROFILED}")
 
+# RelWithDebInfo: strip /LTCG to match compiler-side /GL removal.
+# Pairs with XRay.Compiler.cmake — objects compiled without /GL must not link with /LTCG.
+string(REPLACE "/LTCG" "" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO    "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
+string(REPLACE "/LTCG" "" CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO}")
+string(REPLACE "/LTCG" "" CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO}")
+
+# Serialise link jobs under Ninja to prevent LTCG pass-2 OOM.
+# Each LTCG link spawns a full compiler backend holding the whole program in
+# memory; four simultaneous links (one per DX target) can exhaust system RAM.
+if(CMAKE_GENERATOR MATCHES "Ninja")
+    set_property(GLOBAL PROPERTY JOB_POOLS link_pool=1)
+    set(CMAKE_JOB_POOL_LINK link_pool)
+endif()
+
 # Print linker options
 message(DEBUG)
 message(DEBUG "Linker Flags:")
