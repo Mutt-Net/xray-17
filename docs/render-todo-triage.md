@@ -135,7 +135,7 @@ documented as knowledge comments in the source. No further sprint/s1 action.
 |------|------|-------|----------|-------|
 | dx10HW.cpp | 147 | bug | P2 | Refresh rate defaults to 60hz |
 | dx10HW.cpp | 232 | missing-feature | P2 | DX10 init incomplete |
-| dx10HW.cpp | 369 | missing-feature | P2 | Dynamic format selection |
+| dx10HW.cpp | 369 | missing-feature | P2 | ✓ RESOLVED (sprint/s2, d6b5eb8b) — HDR10 backbuffer format + colorspace |
 | dx10HW.cpp | 487 | unknown | P3 | SDR 10-bit path not considered |
 | dx10HW.cpp | 713 | bug | P2 | Unspecified fix needed |
 | dx10HW.cpp | 878 | cleanup | P3 | Check obsolete state needs |
@@ -143,9 +143,9 @@ documented as knowledge comments in the source. No further sprint/s1 action.
 | dx10ResourceManager_Resources.cpp | 177,289,389 | missing-feature | P2 | Shader HACK — all shaders must be implemented |
 | dx10ResourceManager_Scripting.cpp | 49,369 | unknown | P3 | Commented-out scripting paths |
 | dx10r_constants.cpp | 150 | unknown | P3 | Empty TODO |
-| dx10SH_RT.cpp | 93,274 | missing-feature | P2 | Format support + cube validation |
+| dx10SH_RT.cpp | 93,274 | missing-feature | P2 | ✓ RESOLVED (sprint/s2, 3ee2a20f + 02d1738e) — CRT format validation + CRTC DX10/11 port |
 | dx10TextureUtils.cpp | 17 | cleanup | P3 | nullrt hack |
-| dx10TextureUtils.cpp | 104 | bug | P2 | D3DFMT_A2R10G10B10 ABGR/ARGB channel swap |
+| dx10TextureUtils.cpp | 104 | bug | P2 | ✓ RESOLVED (sprint/s2, 74f6a88c) — channel-order documented; A2B10G10R10 mapping restored |
 | dx10StateCache.cpp | 55,68,81 | cleanup | P3 | Remove DX9 state cache leftovers |
 | StateManager/dx10StateManager.cpp | 8 | missing-feature | P2 | Alpha reference control |
 | dx10R_Backend_Runtime.h | 11 | missing-feature | P2 | set_xform stub |
