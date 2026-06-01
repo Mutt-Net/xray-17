@@ -24,7 +24,9 @@ runs:
         arch: x64
 
     - name: Cache Clang
-      if: env.configure-preset == 'System.Clang'
+      if: |
+        env.configure-preset == 'System.Clang' ||
+        env.configure-preset == 'System.Clang.AVX'
       id: cache-clang
       uses: actions/cache@v4
       with:
@@ -33,18 +35,16 @@ runs:
 
     - name: Setup Clang
       if: |
-        env.configure-preset == 'System.Clang' &&
+        (env.configure-preset == 'System.Clang' ||
+        env.configure-preset == 'System.Clang.AVX') &&
         steps.cache-clang.outputs.cache-hit != 'true'
       uses: KyleMayes/install-llvm-action@v2
       with:
         directory: ${{runner.os == 'Windows' && 'C:\Program Files\LLVM' || './llvm'}}
         version: "20.1.0"
-    
+
     - name: Setup CCache
-      #if: |
-      #  env.build-preset == 'Debug' ||
-      #  env.build-preset == 'Verified'
-      if: false
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         max-size: "1G"
+        verbose: 1

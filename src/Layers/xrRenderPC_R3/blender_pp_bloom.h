@@ -13,4 +13,4 @@ public:
 
     CBlender_pp_bloom();
     virtual ~CBlender_pp_bloom();
-}; 
+};

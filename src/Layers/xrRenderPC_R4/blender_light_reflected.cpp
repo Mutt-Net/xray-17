@@ -35,7 +35,6 @@ CBlender_accum_reflected_msaa::~CBlender_accum_reflected_msaa()
 {
 }
 
-//	TODO: DX10: implement CBlender_accum_reflected::Compile
 void CBlender_accum_reflected_msaa::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);

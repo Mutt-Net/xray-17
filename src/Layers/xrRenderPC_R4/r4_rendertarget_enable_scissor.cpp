@@ -36,28 +36,17 @@ void CRenderTarget::enable_dbt_bounds(light* L)
 	u_DBT_enable(bbp.min.z, bbp.max.z);
 }
 
-// nv-DBT
 BOOL CRenderTarget::u_DBT_enable(float zMin, float zMax)
 {
 	if (!RImplementation.o.nvdbt) return FALSE;
 	if (!ps_r2_ls_flags.test(R2FLAG_USE_NVDBT)) return FALSE;
 
-	return FALSE;
-
-	//	TODO: DX10: Check if DX10 supports this feature
-	// enable cheat
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,MAKEFOURCC('N','V','D','B'));
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_Z,*(DWORD*)&zMin);
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_W,*(DWORD*)&zMax); 
-
-	//return TRUE;
+	return FALSE; // NV Depth Bounds Test not supported in DX10+
 }
 
 void CRenderTarget::u_DBT_disable()
 {
-	//	TODO: DX10: Check if DX10 supports this feature
-	//if (RImplementation.o.nvdbt && ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))	
-	//	HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,0);
+	// NV Depth Bounds Test not supported in DX10+
 }
 
 BOOL CRenderTarget::enable_scissor(light* L) // true if intersects near plane

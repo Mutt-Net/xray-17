@@ -56,8 +56,6 @@ void CRenderTarget::phase_scene_begin()
 	                   D3DSTENCILOP_KEEP);
 
 	// Misc		- draw only front-faces
-	//	TODO: DX10: siable two-sided stencil here
-	//CHK_DX(HW.pDevice->SetRenderState	( D3DRS_TWOSIDEDSTENCILMODE,FALSE				));
 	RCache.set_CullMode(CULL_CCW);
 	RCache.set_ColorWriteEnable();
 }
@@ -93,8 +91,8 @@ void CRenderTarget::phase_scene_end()
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Fill vertex buffer

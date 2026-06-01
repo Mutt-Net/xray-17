@@ -43,7 +43,6 @@ void CRenderTarget::accum_direct(u32 sub_phase)
 	if ((uiElementIndex == SE_SUN_NEAR) && use_minmax_sm_this_frame())
 		uiElementIndex = SE_SUN_NEAR_MINMAX;
 
-	//	TODO: DX10: Remove half pixe offset
 	// *** assume accumulator setted up ***
 	light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
 
@@ -53,8 +52,8 @@ void CRenderTarget::accum_direct(u32 sub_phase)
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)
@@ -163,9 +162,7 @@ void CRenderTarget::accum_direct(u32 sub_phase)
 		//	0.5f + fTexelOffs,	0.5f + fTexelOffs,	fBias,			1.0f
 		//};
 		float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	TODO: DX10: Remove this when fix inverse culling for far region
-		float fBias = (SE_SUN_NEAR == sub_phase) ? (-ps_r2_sun_depth_near_bias) : ps_r2_sun_depth_far_bias;
+		float fBias = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_bias : ps_r2_sun_depth_far_bias;
 		Fmatrix m_TexelAdjust =
 		{
 			0.5f, 0.0f, 0.0f, 0.0f,
@@ -253,34 +250,6 @@ void CRenderTarget::accum_direct(u32 sub_phase)
 		RCache.set_c("m_shadow", m_shadow);
 		RCache.set_c("m_sunmask", m_clouds_shadow);
 
-		// nv-DBT
-		float zMin, zMax;
-		if (SE_SUN_NEAR == sub_phase)
-		{
-			zMin = 0;
-			zMax = ps_r2_sun_near;
-		}
-		else
-		{
-			extern float OLES_SUN_LIMIT_27_01_07;
-			zMin = ps_r2_sun_near;
-			zMax = OLES_SUN_LIMIT_27_01_07;
-		}
-		center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, zMin);
-		Device.mFullTransform.transform(center_pt);
-		zMin = center_pt.z;
-
-		center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, zMax);
-		Device.mFullTransform.transform(center_pt);
-		zMax = center_pt.z;
-
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		//		if (u_DBT_enable(zMin,zMax))	{
-		// z-test always
-		//			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-		//			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-		//		}
-
 		// Fetch4 : enable
 		//		if (RImplementation.o.HW_smap_FETCH4)	{
 		//. we hacked the shader to force smap on S0
@@ -330,10 +299,6 @@ void CRenderTarget::accum_direct(u32 sub_phase)
 		//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		//		}
 
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		// disable depth bounds
-		//		u_DBT_disable	();
-
 		//	Igor: draw volumetric here
 		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
 		if (RImplementation.o.advancedpp && ps_sunshafts_mode)
@@ -356,7 +321,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 	if ((uiElementIndex == SE_SUN_NEAR) && use_minmax_sm_this_frame())
 		uiElementIndex = SE_SUN_NEAR_MINMAX;
 
-	//	TODO: DX10: Remove half pixe offset
 	// *** assume accumulator setted up ***
 	light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
 
@@ -366,8 +330,8 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)
@@ -476,9 +440,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 		//	0.5f + fTexelOffs,	0.5f + fTexelOffs,	fBias,			1.0f
 		//};
 		float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	TODO: DX10: Remove this when fix inverse culling for far region
-		//		float			fBias				= (SE_SUN_NEAR==sub_phase)?(-ps_r2_sun_depth_near_bias):ps_r2_sun_depth_far_bias;
 		Fmatrix m_TexelAdjust =
 		{
 			0.5f, 0.0f, 0.0f, 0.0f,
@@ -605,34 +566,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 		}
 
 
-		// nv-DBT
-		float zMin, zMax;
-		if (SE_SUN_NEAR == sub_phase)
-		{
-			zMin = 0;
-			zMax = ps_r2_sun_near;
-		}
-		else
-		{
-			extern float OLES_SUN_LIMIT_27_01_07;
-			zMin = ps_r2_sun_near;
-			zMax = OLES_SUN_LIMIT_27_01_07;
-		}
-		center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, zMin);
-		Device.mFullTransform.transform(center_pt);
-		zMin = center_pt.z;
-
-		center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, zMax);
-		Device.mFullTransform.transform(center_pt);
-		zMax = center_pt.z;
-
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		//		if (u_DBT_enable(zMin,zMax))	{
-		// z-test always
-		//			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-		//			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-		//		}
-
 		// Fetch4 : enable
 		//		if (RImplementation.o.HW_smap_FETCH4)	{
 		//. we hacked the shader to force smap on S0
@@ -723,10 +656,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 		//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		//		}
 
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		// disable depth bounds
-		//		u_DBT_disable	();
-
 		//	Igor: draw volumetric here
 		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
 		if (RImplementation.o.advancedpp && ps_sunshafts_mode && sub_phase == SE_SUN_FAR)
@@ -746,8 +675,7 @@ void CRenderTarget::accum_direct_blend()
 		else
 			u_setrt(rt_Accumulator,NULL,NULL, rt_MSAADepth->pZRT);
 
-		//	TODO: DX10: remove half pixel offset
-		// Common calc for quad-rendering
+			// Common calc for quad-rendering
 		u32 Offset;
 		u32 C = color_rgba(255, 255, 255, 255);
 		
@@ -830,8 +758,8 @@ void CRenderTarget::accum_direct_f(u32 sub_phase)
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)
@@ -935,9 +863,7 @@ void CRenderTarget::accum_direct_f(u32 sub_phase)
 		// texture adjustment matrix
 		float fTexelOffs = (.5f / float(RImplementation.o.smapsize));
 		float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	TODO: DX10: Remove this when fix inverse culling for far region
-		float fBias = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_bias : -ps_r2_sun_depth_far_bias;
+		float fBias = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_bias : ps_r2_sun_depth_far_bias;
 		Fmatrix m_TexelAdjust =
 		{
 			0.5f, 0.0f, 0.0f, 0.0f,
@@ -1040,7 +966,6 @@ void CRenderTarget::accum_direct_f(u32 sub_phase)
 void CRenderTarget::accum_direct_lum()
 {
 	PIX_EVENT(accum_direct_lum);
-	//	TODO: DX10: Remove half pixel offset
 	// Select target
 	phase_accumulator();
 
@@ -1053,8 +978,8 @@ void CRenderTarget::accum_direct_lum()
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S; //, d_W = 1.f;
 
 	// Common constants (light-related)
@@ -1277,7 +1202,6 @@ void CRenderTarget::accum_direct_volumetric(u32 sub_phase, const u32 Offset, con
 		RCache.set_c("m_texgen", m_Texgen);
 		//		RCache.set_c				("m_sunmask",			m_clouds_shadow);
 
-		// nv-DBT
 		float zMin, zMax;
 		if (SE_SUN_NEAR == sub_phase)
 		{
@@ -1293,31 +1217,10 @@ void CRenderTarget::accum_direct_volumetric(u32 sub_phase, const u32 Offset, con
 
 		RCache.set_c("volume_range", zMin, zMax, 0, 0);
 
-		Fvector center_pt;
-		center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, zMin);
-		Device.mFullTransform.transform(center_pt);
-		zMin = center_pt.z;
-
-		center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, zMax);
-		Device.mFullTransform.transform(center_pt);
-		zMax = center_pt.z;
-
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		//		if (u_DBT_enable(zMin,zMax))	{
-		// z-test always
-		//			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-		//			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-		//		}
-		//		else
-		{
-			//	TODO: DX10: Implement via different passes
-			if (SE_SUN_NEAR == sub_phase)
-				//HW.pDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_GREATER);
-				RCache.set_ZFunc(D3DCMP_GREATER);
-			else
-				//HW.pDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-				RCache.set_ZFunc(D3DCMP_ALWAYS);
-		}
+		if (SE_SUN_NEAR == sub_phase)
+			RCache.set_ZFunc(D3DCMP_GREATER);
+		else
+			RCache.set_ZFunc(D3DCMP_ALWAYS);
 
 		// Fetch4 : enable
 		//		if (RImplementation.o.HW_smap_FETCH4)	{
@@ -1372,10 +1275,6 @@ void CRenderTarget::accum_direct_volumetric(u32 sub_phase, const u32 Offset, con
 		//#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
 		//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		//		}
-
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		// disable depth bounds
-		//		u_DBT_disable	();
 
 // SSS : Deprecated
 //		if (RImplementation.o.ssfx_volumetric)

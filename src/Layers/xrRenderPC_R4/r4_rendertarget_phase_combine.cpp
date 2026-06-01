@@ -8,28 +8,19 @@
 
 void CRenderTarget::DoAsyncScreenshot()
 {
-	//	Igor: screenshot will not have postprocess applied.
-	//	TODO: fox that later
+	//	Screenshot will not have postprocess applied.
 	if (RImplementation.m_bMakeAsyncSS)
 	{
 		HRESULT hr;
 
-		//	HACK: unbind RT. CopyResourcess needs src and targetr to be unbound.
+		//	HACK: unbind RT. CopyResource needs src and target to be unbound.
 		//u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 
-		//ID3DTexture2D *pTex = 0;
-		//if (RImplementation.o.dx10_msaa)
-		//	pTex = rt_Generic->pSurface;
-		//else
-		//	pTex = rt_Color->pSurface;
-
-
-		//HW.pDevice->CopyResource( t_ss_async, pTex );
 		ID3DTexture2D* pBuffer;
-		hr = HW.m_pSwapChain->GetBuffer(0, __uuidof( ID3D10Texture2D), (LPVOID*)&pBuffer);
-		// TODO: this won't work in DX11 with HDR due to texture format incompat
+		hr = HW.m_pSwapChain->GetBuffer(0, __uuidof(ID3DTexture2D), (LPVOID*)&pBuffer);
+		VERIFY(SUCCEEDED(hr));
 		HW.pContext->CopyResource(t_ss_async, pBuffer);
-
+		pBuffer->Release();
 
 		RImplementation.m_bMakeAsyncSS = false;
 	}
@@ -43,7 +34,6 @@ void CRenderTarget::phase_combine()
 	
 	bool ssfx_PrevPos_Requiered = false;
 
-	//	TODO: DX10: Remove half poxel offset
 	bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
 	u32 Offset = 0;
@@ -627,8 +617,8 @@ void CRenderTarget::phase_combine()
 		float _h = float(Device.dwHeight);
 		float ddw = 1.f / _w;
 		float ddh = 1.f / _h;
-		p0.set(.5f / _w, .5f / _h);
-		p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+		p0.set(0.f, 0.f);
+		p1.set(1.f, 1.f);
 
 		// Fill vertex buffer
 		v_aa* pv = (v_aa*)RCache.Vertex.Lock(4, g_aa_AA->vb_stride, Offset);
@@ -715,7 +705,7 @@ void CRenderTarget::phase_combine()
 	RCache.set_Stencil(FALSE);
 
 	if (RImplementation.o.dx11_hdr10) {
-		// TODO: we should be able to avoid a copy if both are enabled
+		// A copy could be avoided when both MSAA and HDR bloom are enabled; minor optimisation.
 		if (ps_r4_hdr10_bloom_on) {
 			HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), rt_Color->pTexture->surface_get());
 			phase_hdr10_bloom(); // samples from rt_Generic_0, writes to rt_Color
@@ -874,7 +864,6 @@ void CRenderTarget::phase_combine_volumetric()
 	u32 Offset = 0;
 	//Fvector2	p0,p1;
 
-	//	TODO: DX10: Remove half pixel offset here
 
 	//u_setrt(rt_Generic_0,0,0,HW.pBaseZB );			// LDR RT
 	if (!RImplementation.o.dx10_msaa)

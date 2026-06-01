@@ -7,7 +7,6 @@ CBlender_light_occq::~CBlender_light_occq()
 {
 }
 
-//	TODO: DX10: if nesessary for NV stencil optimisation implement pass 1
 void CBlender_light_occq::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);

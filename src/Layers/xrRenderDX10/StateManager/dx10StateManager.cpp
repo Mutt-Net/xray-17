@@ -5,8 +5,6 @@
 
 dx10StateManager StateManager;
 
-//	DX10: TODO: Implement alpha referense control
-
 dx10StateManager::dx10StateManager()
 {
 	//	If dx10StateManager would ever own any object

@@ -138,7 +138,6 @@ CBlender_accum_point_msaa::~CBlender_accum_point_msaa()
 {
 }
 
-//	TODO: DX10: Implement CBlender_accum_point::Compile
 void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);

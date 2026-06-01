@@ -132,7 +132,6 @@ CBlender_accum_direct_msaa::~CBlender_accum_direct_msaa()
 {
 }
 
-//	TODO: DX10:	implement CBlender_accum_direct::Compile
 void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
@@ -268,7 +267,6 @@ CBlender_accum_direct_volumetric_msaa::~CBlender_accum_direct_volumetric_msaa()
 {
 }
 
-//	TODO: DX10:	implement CBlender_accum_direct::Compile
 void CBlender_accum_direct_volumetric_msaa::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
@@ -316,7 +314,6 @@ CBlender_accum_direct_volumetric_sun_msaa::~CBlender_accum_direct_volumetric_sun
 {
 }
 
-//	TODO: DX10:	implement CBlender_accum_direct::Compile
 void CBlender_accum_direct_volumetric_sun_msaa::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);

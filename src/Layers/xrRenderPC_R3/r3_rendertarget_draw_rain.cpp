@@ -10,8 +10,8 @@ void CRenderTarget::draw_rain(light& RainSetup)
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
 	Fvector2 p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.f, 0.f);
+	p1.set(1.f, 1.f);
 	float d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)
@@ -113,35 +113,6 @@ void CRenderTarget::draw_rain(light& RainSetup)
 			FPU::m24r();
 		}
 
-		/*
-		// texture adjustment matrix
-		//float			fRange				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_scale:ps_r2_sun_depth_far_scale;
-		float			fRange				=  1;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	TODO: DX10: Remove this when fix inverse culling for far region
-		float			fBias				= 0;
-		Fmatrix			m_TexelAdjust		= 
-		{
-			0.5f,				0.0f,				0.0f,			0.0f,
-			0.0f,				-0.5f,				0.0f,			0.0f,
-			0.0f,				0.0f,				fRange,			0.0f,
-			0.5f,				0.5f,				fBias,			1.0f
-		};
-
-		// compute xforms
-		FPU::m64r			();
-		Fmatrix				xf_invview;		xf_invview.invert	(Device.mView)	;
-
-		// shadow xform
-		Fmatrix				m_shadow;
-		{
-			Fmatrix			xf_project;		xf_project.mul		(m_TexelAdjust,RainSetup.X.D.combine);
-			m_shadow.mul	(xf_project,	xf_invview);
-
-			FPU::m24r		();
-		}
-		*/
-
 		// clouds xform
 		Fmatrix m_clouds_shadow;
 		{
@@ -194,31 +165,6 @@ void CRenderTarget::draw_rain(light& RainSetup)
 		//		RCache.set_c				("Ldynamic_color",		L_clr.x,L_clr.y,L_clr.z,L_spec	);
 		//RCache.set_c				("m_shadow",			m_shadow						);
 		//RCache.set_c				("m_sunmask",			m_clouds_shadow					);
-
-		/*
-		// nv-DBT
-		float zMin,zMax;
-		if (SE_SUN_NEAR==sub_phase)	{
-			zMin = 0;
-			zMax = ps_r2_sun_near;
-		} else {
-			extern float	OLES_SUN_LIMIT_27_01_07;
-			zMin = ps_r2_sun_near;
-			zMax = OLES_SUN_LIMIT_27_01_07;
-		}
-		center_pt.mad(Device.vCameraPosition,Device.vCameraDirection,zMin);	Device.mFullTransform.transform	(center_pt);
-		zMin = center_pt.z	;
-
-		center_pt.mad(Device.vCameraPosition,Device.vCameraDirection,zMax);	Device.mFullTransform.transform	(center_pt);
-		zMax = center_pt.z	;
-		*/
-
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		//		if (u_DBT_enable(zMin,zMax))	{
-		// z-test always
-		//			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-		//			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-		//		}
 
 		// Fetch4 : enable
 		//		if (RImplementation.o.HW_smap_FETCH4)	{
@@ -389,8 +335,5 @@ void CRenderTarget::draw_rain(light& RainSetup)
 			}
 		}
 
-		//	TODO: DX10: Check if DX10 has analog for NV DBT
-		// disable depth bounds
-		//		u_DBT_disable	();
 	}
 }

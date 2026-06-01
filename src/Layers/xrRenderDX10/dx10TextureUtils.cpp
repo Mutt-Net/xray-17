@@ -14,8 +14,8 @@ namespace dx10TextureUtils
 		//D3DFMT_R8G8B8 Not available 
 		{D3DFMT_A8R8G8B8, DXGI_FORMAT_R8G8B8A8_UNORM}, // Not available 
 		//D3DFMT_X8R8G8B8 Not available 
-		//	TODO: DX10: Remove. Need only for nullrt
-		//{ D3DFMT_R5G6B5,		DXGI_FORMAT_B5G6R5_UNORM },		// Not available 
+		//	nullrt only: R5G6B5 mapped to R8G8B8A8 (B5G6R5 not available)
+		//{ D3DFMT_R5G6B5,		DXGI_FORMAT_B5G6R5_UNORM },		// Not available
 		{D3DFMT_R5G6B5, DXGI_FORMAT_R8G8B8A8_UNORM}, // Not available 
 		//D3DFMT_X1R5G5B5 Not available 
 		//D3DFMT_A1R5G5B5 Not available 

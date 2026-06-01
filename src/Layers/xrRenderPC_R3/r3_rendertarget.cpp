@@ -124,7 +124,6 @@ void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTa
 
 void CRenderTarget::u_stencil_optimize(eStencilOptimizeMode eSOM)
 {
-	//	TODO: DX10: remove half pixel offset?
 	VERIFY(RImplementation.o.nvstencil);
 	//RCache.set_ColorWriteEnable	(FALSE);
 	u32 Offset;
@@ -566,7 +565,6 @@ CRenderTarget::CRenderTarget()
 	}
 	else
 	{
-		//	TODO: DX10: Check if we need old-style SMap
 		VERIFY(!"Use HW SMAPs only!");
 		//u32	size					=RImplementation.o.smapsize	;
 		//rt_smap_surf.create			(r2_RT_smap_surf,			size,size,D3DFMT_R32F);
@@ -579,8 +577,6 @@ CRenderTarget::CRenderTarget()
 	}
 
 	//	RAIN
-	//	TODO: DX10: Create resources only when DX10 rain is enabled.
-	//	Or make DX10 rain switch dynamic?
 	{
 		CBlender_rain TempBlender;
 		s_rain.create(&TempBlender, "null");
@@ -1115,9 +1111,6 @@ CRenderTarget::~CRenderTarget()
 	t_envmap_0.destroy();
 	t_envmap_1.destroy();
 
-	//	TODO: DX10: Check if we need old style SMAPs
-	//	_RELEASE					(rt_smap_ZB);
-
 	// Jitter
 	for (int it = 0; it < TEX_jitter_count; it++)
 	{
@@ -1237,8 +1230,8 @@ bool CRenderTarget::need_to_render_sunshafts()
 	{
 		CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fSunShaftsIntensity;
-		//	TODO: add multiplication by sun color here
 		if (fValue < 0.0001) return false;
+		if (E.sun_color.square_magnitude() < 0.0001f) return false;
 	}
 
 	return true;

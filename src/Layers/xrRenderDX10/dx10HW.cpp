@@ -146,7 +146,7 @@ void CHW::CreateD3D()
     // when vsync is off (PresentInterval = 0) and only when in window mode
     // store whether we can use the flag for later use (swapchain creation, buffer resize, present call)
 
-    // TODO: On some PC configurations (versions of Windows, graphics drivers, currently unknown what exactly) this isn't
+    // Note: On some PC configurations (versions of Windows, graphics drivers, currently unknown what exactly) this isn't
     // sufficient to disable the DWM vsync when the game is launched in a windowed mode, however if the user switches from
     // borderless/windowed -> exclusive fullscreen -> borderless/windowed then it seems to work correctly.
     // Worth investigating why this is occurring
@@ -230,8 +230,6 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
         GetProcAddress(hD3D,"D3DxxCreateDeviceAndSwapChain");
     R_ASSERT(CreateDeviceAndSwapChain);
     */
-
-    // TODO: DX10: Create appropriate initialization
 
     // General - select adapter and device
     BOOL bWindowed = (g_screenmode != 2);
@@ -411,15 +409,15 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
 	//else					P.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
 
 	if (bWindowed) {
-        // TODO: fix this, shouldn't just default to 60hz
+		// Windowed mode: DXGI ignores RefreshRate; {0,0} is the neutral value.
 #if defined(USE_DX11)
-        sd_fullscreen.RefreshRate.Numerator   = 60;
-        sd_fullscreen.RefreshRate.Denominator = 1;
+		sd_fullscreen.RefreshRate.Numerator   = 0;
+		sd_fullscreen.RefreshRate.Denominator = 0;
 #elif defined(USE_DX10)
-        sd.BufferDesc.RefreshRate.Numerator = 60;
-		sd.BufferDesc.RefreshRate.Denominator = 1;
+		sd.BufferDesc.RefreshRate.Numerator = 0;
+		sd.BufferDesc.RefreshRate.Denominator = 0;
 #endif
-    } else {
+	} else {
 #if defined(USE_DX11)
 		sd_fullscreen.RefreshRate = selectRefresh(sd.Width, sd.Height, sd.Format);
 #elif defined(USE_DX10)
@@ -483,7 +481,6 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
     // setup colorspace
     // HDR10 (U10 output) -> DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020
     // SDR   (U8 output)  -> DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709
-    // TODO: SDR 10-bit?
     IDXGISwapChain3* swapchain3;
     R_CHK(m_pSwapChain->QueryInterface(&swapchain3));
 
@@ -748,13 +745,13 @@ void CHW::Reset(HWND hwnd)
 
 	if (bWindowed)
 	{
+		// Windowed mode: DXGI ignores RefreshRate; {0,0} is the neutral value.
 #if defined(USE_DX11)
-        // TODO: fix
-		cd_fs.RefreshRate.Numerator = 60;
-        cd_fs.RefreshRate.Denominator = 1;
+		cd_fs.RefreshRate.Numerator = 0;
+		cd_fs.RefreshRate.Denominator = 0;
 #elif defined(USE_DX10)
-		desc.RefreshRate.Numerator = 60;
-		desc.RefreshRate.Denominator = 1;
+		desc.RefreshRate.Numerator = 0;
+		desc.RefreshRate.Denominator = 0;
 #endif
 	}
 	else {
@@ -914,41 +911,6 @@ void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
     }
 }
 
-//	TODO: DX10: check if we need these
-/*
-u32	CHW::selectPresentInterval	()
-{
-    D3DCAPS9	caps;
-    pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
-
-    if (!psDeviceFlags.test(rsVSync))
-    {
-        if (caps.PresentationIntervals & D3DPRESENT_INTERVAL_IMMEDIATE)
-            return D3DPRESENT_INTERVAL_IMMEDIATE;
-        if (caps.PresentationIntervals & D3DPRESENT_INTERVAL_ONE)
-            return D3DPRESENT_INTERVAL_ONE;
-    }
-    return D3DPRESENT_INTERVAL_DEFAULT;
-}
-
-u32 CHW::selectGPU ()
-{
-    if (Caps.bForceGPU_SW) return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-
-    D3DCAPS9	caps;
-    pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
-
-    if(caps.DevCaps&D3DDEVCAPS_HWTRANSFORMANDLIGHT)
-    {
-        if (Caps.bForceGPU_NonPure)	return D3DCREATE_HARDWARE_VERTEXPROCESSING;
-        else {
-			if (caps.DevCaps&D3DDEVCAPS_PUREDEVICE) return D3DCREATE_HARDWARE_VERTEXPROCESSING|D3DCREATE_PUREDEVICE;
-			else return D3DCREATE_HARDWARE_VERTEXPROCESSING;
-        }
-        // return D3DCREATE_MIXED_VERTEXPROCESSING;
-    } else return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-}
-*/
 DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
 {
     DXGI_RATIONAL res;
@@ -1110,7 +1072,6 @@ void CHW::OnAppDeactivate()
 
 BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
 {
-    //	TODO: DX10: implement stub for this code.
     VERIFY(!"Implement CHW::support");
     /*
 	HRESULT hr		= pD3D->CheckDeviceFormat(DevAdapter,DevT,Caps.fTarget,usage,(D3DRESOURCETYPE)type,fmt);

@@ -46,7 +46,6 @@ public:
 
 	adopt_dx10sampler(const adopt_dx10sampler& _C) : m_pC(_C.m_pC), m_SI(_C.m_SI) { if (u32(-1) == m_SI) m_pC = 0; }
 
-	// TODO: why are these commented out?
 	//	adopt_sampler&			_texture		(LPCSTR texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
 	//	adopt_sampler&			_projective		(bool _b)				{ if (C) C->i_Projective(stage,_b);													return *this;	}
 		adopt_dx10sampler&	    _clamp			()						{ if (m_pC) m_pC->i_dx10Address	(m_SI,D3DTADDRESS_CLAMP);							return *this;	}
@@ -366,8 +365,7 @@ void CResourceManager::LS_Load()
 
 
 		class_<adopt_dx10sampler>("_dx10sampler")
-		// TODO: why are these commented out?
-		//.def("texture",						&adopt_sampler::_texture		,return_reference_to<1>())
+			//.def("texture",						&adopt_sampler::_texture		,return_reference_to<1>())
 		//.def("project",						&adopt_sampler::_projective		,return_reference_to<1>())
 		.def("clamp",						&adopt_dx10sampler::_clamp			,return_reference_to<1>())
 		//.def("wrap",						&adopt_sampler::_wrap			,return_reference_to<1>())
