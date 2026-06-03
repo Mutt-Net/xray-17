@@ -5,21 +5,40 @@
 !.github
 !.clang-format
 
-# exclude binaries and temporary files
+# build output
 _build/
 /src/*.tss
+
+# IDE / editor artefacts
 **/.vs/
 *.pdb
 *.ilk
 *.user
 *.VC.db
 *.VC.opendb
+*.suo
+*.sdf
+*.opensdf
+.idea/
+*.iml
+cmake-build-*/
+
+# compiled binaries / link artefacts
+*.exe
+*.dll
+*.exp
+*.lib
+*.obj
+*.o
+*.a
+*.map
+*.idb
+
+# LuaJIT build outputs
 lua51.dll
 lua51.exp
 lua51.lib
 luajit.exe
-
-# luajit generated files
 Externals/LuaJIT/src/lj_bcdef.h
 Externals/LuaJIT/src/lj_ffdef.h
 Externals/LuaJIT/src/lj_folddef.h
@@ -28,8 +47,20 @@ Externals/LuaJIT/src/lj_recdef.h
 Externals/LuaJIT/src/host/buildvm_arch.h
 Externals/LuaJIT/src/jit/vmdef.lua
 
-# emacs temp file
+# git worktrees (local only)
+.worktrees/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# emacs temp files
 \#*\#
 *~
+
+# misc
 /compressor/engine.log
-/compressor/engine.log
+*.log
+*.tmp
+Thumbs.db

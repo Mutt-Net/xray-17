@@ -1,0 +1,78 @@
+name: Render Regression
+
+# TEST-02 — wire the golden-image render-regression harness (TEST-01) into CI.
+#
+# SCAFFOLD / GATED. Triggered manually only (workflow_dispatch) until a GPU-equipped runner and
+# a committed golden set exist — so it never fails the (currently dormant) CI pipeline. The
+# comparator self-test below is real and runs on any Linux runner today; the capture+compare job
+# is staged off behind a runner label and an explicit enable flag.
+#
+# To go live once unblocked (see tools/render_regression/README.md):
+#   1. Register a GPU runner labelled [self-hosted, windows, gpu] (BUILD-01).
+#   2. Commit goldens under tools/render_regression/golden/<backend>/.
+#   3. Set the `run_capture` default to true (or pass it at dispatch), and change `on:` to `push`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_capture:
+        description: "Run the GPU capture+compare job (needs a GPU runner + goldens)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: read-all
+
+jobs:
+  comparator-selftest:
+    name: Comparator self-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run comparator self-test
+        run: python tools/render_regression/compare.py --selftest
+
+  capture-and-compare:
+    name: Capture + compare (GPU)
+    needs: comparator-selftest
+    # Staged off until a GPU runner and goldens exist. Flip the input (or this guard) to enable.
+    if: ${{ inputs.run_capture }}
+    runs-on: [self-hosted, windows, gpu]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      # TODO(TEST-01): build the four AnomalyDX*.exe, then run the capture driver for each
+      # backend against tools/render_regression/cameras.ltx, writing captured/<backend>/*.png.
+      # The capture driver does not exist yet (needs the engine + level fixture).
+      - name: Capture frames (placeholder)
+        run: echo "capture driver not implemented yet — see tools/render_regression/README.md"
+
+      - name: Compare against goldens
+        run: |
+          python tools/render_regression/compare.py \
+            --golden-dir tools/render_regression/golden \
+            --candidate-dir captured \
+            --diff-dir diffs
+
+      - name: Upload diffs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: render-regression-diffs
+          path: diffs/
+          if-no-files-found: ignore

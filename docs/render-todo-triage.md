@@ -182,5 +182,25 @@ future work but are not blocking.
 | P3 | ~20 | Documented as knowledge comments (H, I). |
 
 **Sprint 2 targets (E2-T2, E2-T3):** Group A (half-pixel offset) + Group B (rain). — B resolved (stale TODOs only).
-**Sprint 3 targets (E2-T4, E2-T5, E2-T6):** Groups C, D, E, F. — C, D, F resolved in sprint/s1. E still open.
+**Sprint 3 targets (E2-T4, E2-T5, E2-T6):** Groups C, D, E, F. — C, D, F resolved in sprint/s1; **E resolved in sprint/s2** (commit 527180c6, async-screenshot format match). All four closed.
 **Sprint 4+:** Groups G, H, I.
+
+---
+
+## Sprint s3 dispositions (2026-06-03)
+
+Epic RND (Track A start) — see `docs/superpowers/specs/2026-06-03-sprint-s3-design.md` for the
+full investigation. Key correction: the `CRTC` cube-RT apparatus is **vestigial across every
+backend** (no caller anywhere constructs a `ref_rtc`), and is fully implemented for DX10/11 in
+`xrRenderDX10/` (s2) while intentionally `#if`-guarded out of the DX9/R2 build.
+
+| Ticket | Disposition |
+|--------|-------------|
+| RND-01 | ✓ Done (sprint/s3) — removed the misleading dead `/* DX10 cut */` `CRTC`/`_CreateRTC` blocks from the DX9-only `xrRender/ResourceManager_Resources.cpp` + `SH_RT.cpp` (uncommenting them would not compile — symbols are guarded out in DX9). Pointer comment to the DX10/11 home left in place. No behavioural change. |
+| RND-02 | ✓ Done (sprint/s3) — restored the `rtargetsc` census in the shared `ResourceManager_Reset.cpp::Dump()` under `#if defined(USE_DX10) \|\| defined(USE_DX11)`. |
+| RND-03 | ✓ Done (sprint/s3) — `set_xform(u32,Fmatrix)` confirmed dead on the runtime (sole caller `set_Matrices` is `_EDITOR`-only; DX10+ has no fixed-function transform stack). Commented `VERIFY` replaced with a knowledge comment in `dx10R_Backend_Runtime.h`. |
+
+Epic TEST (Track B) — TEST-01/02 **scaffolded, still OPEN**: comparator
+(`tools/render_regression/compare.py`, self-tested), camera fixture, README, and a gated CI
+workflow are committed, but golden capture is blocked on a GPU runner (BUILD-01/02) and a level
+fixture. See `docs/superpowers/specs/2026-06-03-render-regression-harness.md`.

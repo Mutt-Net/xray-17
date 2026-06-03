@@ -125,7 +125,10 @@ void CResourceManager::Dump(bool bBrief)
 	if (!bBrief) mdump(m_textures);
 	Msg("* RM_Dump: rtargets  : %d", m_rtargets.size());
 	if (!bBrief) mdump(m_rtargets);
-	//	DX10 cut 	Msg		("* RM_Dump: rtargetsc : %d",		m_rtargets_c.size());	if(!bBrief) mdump(m_rtargets_c);
+#if defined(USE_DX10) || defined(USE_DX11)
+	Msg("* RM_Dump: rtargetsc : %d", m_rtargets_c.size());
+	if (!bBrief) mdump(m_rtargets_c);
+#endif	//	USE_DX10 || USE_DX11
 	Msg("* RM_Dump: vs        : %d", m_vs.size());
 	if (!bBrief) mdump(m_vs);
 	Msg("* RM_Dump: ps        : %d", m_ps.size());

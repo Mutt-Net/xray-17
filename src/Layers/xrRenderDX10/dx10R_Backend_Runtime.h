@@ -8,7 +8,11 @@
 IC void CBackend::set_xform(u32 ID, const Fmatrix& M)
 {
 	stat.xforms ++;
-	//VERIFY(!"Implement CBackend::set_xform");
+	// Deliberate no-op on DX10/11. This indexed setter mapped to the DX9 fixed-function
+	// transform stack (SetTransform(D3DTS_*)). DX10+ has no fixed-function pipeline — world/
+	// view/projection reach shaders through R_xforms constant buffers (set_xform_world/view/
+	// project -> xforms.set_W/V/P). The only caller is set_Matrices in R_Backend_Runtime.h,
+	// which is #ifdef _EDITOR and never built into the runtime exes. Confirmed dead. (RND-03)
 }
 
 IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)

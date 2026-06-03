@@ -369,38 +369,10 @@ void CResourceManager::_DeleteRT(const CRT* RT)
 	Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
 
-//	DX10 cut 
-/*
-//--------------------------------------------------------------------------------------------------------------
-CRTC*	CResourceManager::_CreateRTC		(LPCSTR Name, u32 size,	D3DFORMAT f)
-{
-	R_ASSERT(Name && Name[0] && size);
-
-	// ***** first pass - search already created RTC
-	LPSTR N = LPSTR(Name);
-	map_RTC::iterator I = m_rtargets_c.find	(N);
-	if (I!=m_rtargets_c.end())	return I->second;
-	else
-	{
-		CRTC *RT				=	xr_new<CRTC>();
-		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_rtargets_c.insert		(mk_pair(RT->set_name(Name),RT));
-		if (RDEVICE.b_is_Ready)	RT->create	(Name,size,f);
-		return					RT;
-	}
-}
-void	CResourceManager::_DeleteRTC		(const CRTC* RT)
-{
-	if (0==(RT->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	LPSTR N				= LPSTR		(*RT->cName);
-	map_RTC::iterator I	= m_rtargets_c.find	(N);
-	if (I!=m_rtargets_c.end())	{
-		m_rtargets_c.erase(I);
-		return;
-	}
-	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
-}
-*/
+// Cube render targets (CRTC / _CreateRTC / _DeleteRTC) are a DX10+-only facility and are
+// implemented in xrRenderDX10/dx10ResourceManager_Resources.cpp. This DX9/R2 translation unit
+// guards CRTC and m_rtargets_c out entirely (see SH_RT.h / ResourceManager.h #if USE_DX10),
+// so there is nothing to implement here. (RND-01)
 //--------------------------------------------------------------------------------------------------------------
 void CResourceManager::DBG_VerifyGeoms()
 {

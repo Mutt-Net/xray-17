@@ -1,0 +1,42 @@
+; Render-regression camera fixture (template) — TEST-01
+;
+; One [shot_*] section per captured frame. The capture driver teleports the camera to each
+; pose on the fixture level, settles `settle_frames`, and writes <name>.png per backend.
+; Tolerances are optional per-shot overrides of compare.py defaults (tol_mae=2.0, tol_hot=0.002).
+;
+; The fixture level must be deterministic: baked lighting, A-Life disabled, weather/time pinned.
+; See docs/superpowers/specs/2026-06-03-render-regression-harness.md.
+
+[fixture]
+level        = rr_testmap            ; a small, self-contained, A-Life-free test level
+resolution   = 1280, 720
+weather      = default
+time_of_day  = 12.0                  ; noon, fixed
+settle_frames = 8                    ; frames to render before capture (let streaming settle)
+backends     = DX8, DX9, DX10, DX11  ; AnomalyDX{8,9,10,11}.exe
+
+[shot_overview]
+; wide establishing shot — exercises terrain, sky, sun, fog
+pos          = 120.0, 14.0, 85.0
+dir          = -0.71, -0.10, 0.69
+fov          = 67.0
+
+[shot_interior]
+; enclosed room — exercises point lights, shadows, decals
+pos          = 44.5, 2.0, 12.0
+dir          = 0.0, 0.0, 1.0
+fov          = 67.0
+tol_mae      = 3.0                   ; looser: dynamic light flicker tolerated
+
+[shot_water]
+; water plane + reflections — exercises SSR / reflection path
+pos          = 88.0, 6.0, 140.0
+dir          = 0.3, -0.2, -0.93
+fov          = 75.0
+
+[shot_foliage]
+; dense vegetation — exercises grass/tree instancing, alpha-test, wind
+pos          = 200.0, 8.0, 60.0
+dir          = -0.5, -0.05, 0.86
+fov          = 67.0
+tol_hot      = 0.005                 ; looser: wind animation moves alpha edges

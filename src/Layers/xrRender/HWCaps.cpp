@@ -86,7 +86,7 @@ namespace
 
 		res = _max(res, GetATIGpuNum());
 
-		res = _max(res, 2);
+		res = _max(res, 1u);
 
 		res = _min(res, CHWCaps::MAX_GPUS);
 

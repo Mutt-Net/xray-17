@@ -431,6 +431,105 @@ path, mirroring the DX11 block. Key implementation notes:
 
 ---
 
+## Sprint s3 — DX10/11 Port Cleanup + Regression-Harness Scaffold
+
+Track A start (finish-the-port correctness) plus the Track B render-regression scaffold.
+Full rationale: `docs/superpowers/specs/2026-06-03-sprint-s3-design.md`.
+
+### S3-1: Remove dead cube-RT (`CRTC`) blocks from the DX9 base (RND-01)
+
+**Files:** `src/Layers/xrRender/ResourceManager_Resources.cpp`, `src/Layers/xrRender/SH_RT.cpp`
+
+**Symptom / framing correction:** the backlog claimed the "shared resource manager" cube-RT
+(`CRTC`) path was "half-wired" and needed completing. It is not. `CRTC`, `m_rtargets_c`, and
+`_CreateRTC`/`_DeleteRTC` are `#if defined(USE_DX10) || defined(USE_DX11)`-guarded in `SH_RT.h`
+and `ResourceManager.h`. The two `/* DX10 cut */` blocks live in translation units compiled
+**only into R2/DX9**, where those symbols do not exist — uncommenting them would *break* the DX9
+build, not complete anything. The real implementation already exists and compiles for DX10/11 in
+`xrRenderDX10/dx10SH_RT.cpp` + `dx10ResourceManager_Resources.cpp` (landed in sprint s2). The
+whole `CRTC` apparatus is in fact vestigial — no caller anywhere constructs a `ref_rtc`.
+
+**Fix:** delete the misleading dead blocks; leave a one-line pointer to the DX10/11 home. No
+behavioural change (the code was never compiled).
+
+### S3-2: Restore cube-RT census in the shared resource dump (RND-02)
+
+**File:** `src/Layers/xrRender/ResourceManager_Reset.cpp`
+
+**Symptom:** `CResourceManager::Dump()` (the resource census logged on reset/shutdown) omitted the
+`rtargetsc` map — the line was `/* DX10 cut */`. `Dump()` is compiled into all four backends.
+
+**Fix:** restore the `Msg("* RM_Dump: rtargetsc ...")` + `mdump(m_rtargets_c)` lines under
+`#if defined(USE_DX10) || defined(USE_DX11)`, matching how `reset()` already references
+`m_rtargets_c` in the same file. DX9 build is unaffected (guarded out).
+
+### S3-3: Resolve the `set_xform` stub (RND-03)
+
+**File:** `src/Layers/xrRenderDX10/dx10R_Backend_Runtime.h`
+
+**Symptom:** `CBackend::set_xform(u32, const Fmatrix&)` carried a commented-out
+`//VERIFY(!"Implement CBackend::set_xform")`, reading as unfinished work.
+
+**Root cause / disposition:** confirmed **dead on the runtime**. DX10+ has no fixed-function
+transform stack (the DX9 form mapped to `SetTransform(D3DTS_*)`); world/view/projection reach
+shaders via `R_xforms` constant buffers. The only caller, `set_Matrices`, is `#ifdef _EDITOR`
+and never built into the shipping exes.
+
+**Fix:** replace the commented `VERIFY` with a knowledge comment recording the deliberate no-op
+and the evidence. Keeps `stat.xforms++`. (No compiled behaviour change.)
+
+### S3-4: Render-regression harness — scaffold only (TEST-01 / TEST-02, OPEN)
+
+**Files:** `tools/render_regression/` (`compare.py`, `cameras.example.ltx`, `README.md`),
+`.github/workflows/render-regression.yml`, design spec under `docs/superpowers/specs/`.
+
+A golden-image perceptual-diff safety net. The dependency-free comparator is delivered and
+self-tested (`compare.py --selftest`); the CI workflow is gated (`workflow_dispatch`) so it
+cannot fail the dormant pipeline. **Not completed:** golden capture needs a GPU runner
+(BUILD-01/02) and a deterministic level fixture, neither available. TEST-01/02 remain open.
+
+### S3-5: `GetGpuNum` hardcoded minimum forces 2-GPU mode on all DX10/11 systems (playtest find)
+
+**Files:** `src/Layers/xrRender/HWCaps.cpp`
+
+**Symptom:** On systems with an NVIDIA dGPU + AMD iGPU (e.g. Ryzen APU + RTX discrete), Anomaly/
+GAMMA DX11 launches at a fraction of the configured resolution with the mouse cursor confined to the
+top-left quarter of the window. Fullscreen mode freezes. Windowed mode renders into a tiny area.
+Disabling the iGPU in Device Manager has no effect.
+
+**Root cause:** `GetGpuNum()` (line 89 of `HWCaps.cpp`) unconditionally clamps the GPU count to a
+minimum of 2:
+
+```cpp
+res = _max(res, 2);  // BUG: forces 2-GPU/SLI path on every DX10/11 system
+```
+
+This means DX10/DX11 always enters the multi-GPU rendering path regardless of what NVAPI or
+DXGI actually reports. On single-GPU systems this is harmless when only an NVIDIA adapter is
+present, but with a mixed NVIDIA+AMD setup the SLI swap-chain path misbehaves: DXGI enumerates
+the AMD adapter even after it is OS-disabled (Status: Error, still returned by `IDXGIFactory::
+EnumAdapters`), and the engine creates a swap chain sized against the wrong adapter's output,
+producing the quarter-screen cursor clip region.
+
+The iGPU's DXGI presence is the trigger, but the root cause is the hardcoded minimum — a single-
+GPU system should never enter multi-GPU rendering.
+
+**Fix:**
+```cpp
+// Before:
+res = _max(res, 2);
+
+// After:
+res = _max(res, 1u);
+```
+
+**Workaround for live Anomaly/GAMMA builds (engine not recompilable):**
+Set `rs_screenmode borderless` in `appdata/user.ltx`. Borderless mode uses a different swap-chain
+present path that is less sensitive to the multi-GPU confusion. Fullscreen exclusive is broken
+until the engine is rebuilt with the fix.
+
+---
+
 ## Render TODO Triage Reference
 
 `docs/render-todo-triage.md` contains a full classified inventory of all render TODO/FIXME
