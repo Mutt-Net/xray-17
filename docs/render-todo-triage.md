@@ -200,7 +200,15 @@ backend** (no caller anywhere constructs a `ref_rtc`), and is fully implemented 
 | RND-02 | ✓ Done (sprint/s3) — restored the `rtargetsc` census in the shared `ResourceManager_Reset.cpp::Dump()` under `#if defined(USE_DX10) \|\| defined(USE_DX11)`. |
 | RND-03 | ✓ Done (sprint/s3) — `set_xform(u32,Fmatrix)` confirmed dead on the runtime (sole caller `set_Matrices` is `_EDITOR`-only; DX10+ has no fixed-function transform stack). Commented `VERIFY` replaced with a knowledge comment in `dx10R_Backend_Runtime.h`. |
 
-Epic TEST (Track B) — TEST-01/02 **scaffolded, still OPEN**: comparator
-(`tools/render_regression/compare.py`, self-tested), camera fixture, README, and a gated CI
-workflow are committed, but golden capture is blocked on a GPU runner (BUILD-01/02) and a level
-fixture. See `docs/superpowers/specs/2026-06-03-render-regression-harness.md`.
+Epic TEST (Track B) — TEST-01/02 **BLOCKED (environment), deferred** — P1, not closeable in the
+current setup.
+
+| Ticket | Status | Blocker |
+|--------|--------|---------|
+| TEST-01 | Scaffold delivered (comparator `tools/render_regression/compare.py` self-tested; camera fixture; README; design spec). **Code-incomplete**: engine-side capture driver not written. | Needs the Anomaly `gamedata` (~10 GB — the engine can't load a level or even reach its menu without it) **and** a render-capable machine (GPU, or WARP software rasteriser) to capture golden images. Neither exists here. |
+| TEST-02 | Gated CI workflow committed (`.github/workflows/render-regression.yml`); the `comparator-selftest` job is real and runs on any runner. | The perceptual-diff gate depends on TEST-01 goldens, so it stays `workflow_dispatch`-gated until those exist. |
+
+To unblock: stage a deterministic level fixture + the asset set on a render-capable runner (the
+new Windows runner can drive WARP without a GPU), implement the capture driver, capture goldens
+once, then flip the workflow trigger to `push`. See
+`docs/superpowers/specs/2026-06-03-render-regression-harness.md` §6–7.
