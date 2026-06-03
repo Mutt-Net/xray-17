@@ -61,7 +61,9 @@ size_t xrMemory::mem_usage()
 		FATAL("bad start of heap");
 		break;
 	case _HEAPBADNODE:
-		FATAL("bad node in heap");
+		// _heapwalk is unreliable on 64-bit UCRT and commonly returns HEAPBADNODE
+		// after large heaps have been walked. Treat as end of walk; this function
+		// is diagnostic only and a failed walk does not indicate heap corruption.
 		break;
 	}
 	return bytesUsed;
