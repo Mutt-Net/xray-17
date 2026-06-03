@@ -200,15 +200,19 @@ backend** (no caller anywhere constructs a `ref_rtc`), and is fully implemented 
 | RND-02 | ✓ Done (sprint/s3) — restored the `rtargetsc` census in the shared `ResourceManager_Reset.cpp::Dump()` under `#if defined(USE_DX10) \|\| defined(USE_DX11)`. |
 | RND-03 | ✓ Done (sprint/s3) — `set_xform(u32,Fmatrix)` confirmed dead on the runtime (sole caller `set_Matrices` is `_EDITOR`-only; DX10+ has no fixed-function transform stack). Commented `VERIFY` replaced with a knowledge comment in `dx10R_Backend_Runtime.h`. |
 
-Epic TEST (Track B) — TEST-01/02 **BLOCKED (environment), deferred** — P1, not closeable in the
-current setup.
+Epic TEST (Track B) — TEST-01/02 **MOTHBALLED** (de-scoped by owner decision, 2026-06-03).
+The golden-image render-regression harness is **removed from the sprint schedule** — it is no
+longer pending/blocked work, it is parked. Rationale: end-to-end capture needs the Anomaly
+`gamedata` asset set + a render-capable runner that the project does not maintain, and the owner
+elected not to pursue screenshot-based capture.
 
-| Ticket | Status | Blocker |
-|--------|--------|---------|
-| TEST-01 | Scaffold delivered (comparator `tools/render_regression/compare.py` self-tested; camera fixture; README; design spec). **Code-incomplete**: engine-side capture driver not written. | Needs the Anomaly `gamedata` (~10 GB — the engine can't load a level or even reach its menu without it) **and** a render-capable machine (GPU, or WARP software rasteriser) to capture golden images. Neither exists here. |
-| TEST-02 | Gated CI workflow committed (`.github/workflows/render-regression.yml`); the `comparator-selftest` job is real and runs on any runner. | The perceptual-diff gate depends on TEST-01 goldens, so it stays `workflow_dispatch`-gated until those exist. |
+What is retained (parked, not active), so the effort can be revived without redoing it:
+- `tools/render_regression/compare.py` — the dependency-free perceptual comparator (self-tested).
+- `tools/render_regression/cameras.example.ltx`, `README.md` — fixture template + operator guide.
+- `tools/render_regression/render-regression.yml.parked` — the CI workflow, **moved out of
+  `.github/workflows/` so it is de-registered from CI** (inert).
+- `docs/superpowers/specs/2026-06-03-render-regression-harness.md` — the design, for revival.
 
-To unblock: stage a deterministic level fixture + the asset set on a render-capable runner (the
-new Windows runner can drive WARP without a GPU), implement the capture driver, capture goldens
-once, then flip the workflow trigger to `push`. See
-`docs/superpowers/specs/2026-06-03-render-regression-harness.md` §6–7.
+To revive: move the `.parked` workflow back under `.github/workflows/`, implement the engine-side
+capture driver, stage a level fixture + assets on a runner, capture goldens. Until then TEST-01/02
+are **not scheduled**.

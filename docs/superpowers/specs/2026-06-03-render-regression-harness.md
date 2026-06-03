@@ -1,8 +1,10 @@
 # Render-Regression Harness — Design (TEST-01 / TEST-02)
 
-**Status:** SCAFFOLD. The design and the offline comparator are delivered and self-tested. The
-end-to-end harness is **blocked** on prerequisites that do not exist in the build environment
-(see §6). TEST-01/02 remain open in the triage until those are met.
+**Status:** MOTHBALLED (de-scoped 2026-06-03 by owner decision). The design and the offline
+comparator are delivered and self-tested, but the end-to-end harness was **parked**: it needs
+prerequisites the project does not maintain (§6), and the owner elected not to pursue
+screenshot-based capture. TEST-01/02 are **no longer scheduled**. This document is retained as
+the revival recipe should that change.
 
 ## 1. Problem
 

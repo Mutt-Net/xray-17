@@ -1,8 +1,11 @@
 # Render-Regression Harness (TEST-01 / TEST-02)
 
-A golden-image perceptual-diff safety net for the four renderer backends. **Status: scaffold.**
-The comparator works and is self-tested; the end-to-end harness is blocked on a GPU runner and a
-level fixture (see *Blockers*). Design: `docs/superpowers/specs/2026-06-03-render-regression-harness.md`.
+A golden-image perceptual-diff safety net for the four renderer backends. **Status: MOTHBALLED
+(de-scoped 2026-06-03).** This directory is parked for future revival, not active work. The
+comparator works and is self-tested, but the end-to-end harness was de-scoped (needs gamedata
+assets + a render-capable runner the project doesn't maintain). The CI workflow was moved to
+`render-regression.yml.parked` so it is de-registered from CI. Design:
+`docs/superpowers/specs/2026-06-03-render-regression-harness.md`.
 
 ## What's here
 

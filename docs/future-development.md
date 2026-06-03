@@ -200,8 +200,8 @@ Cross-reference: items already framed as Tracks A–G in §3 are tagged `[Track 
 
 | ID | Title | Class | Effort | Pri | Notes |
 |----|-------|-------|--------|-----|-------|
-| TEST-01 | Golden-image render-regression harness | infra | M | P1 | Scripted level load, fixed cameras, per-backend capture, perceptual diff vs committed PNGs. The single highest-leverage capability gap. |
-| TEST-02 | Wire regression harness into CI | infra | S | P1 | Run TEST-01 alongside the format checks; fail on perceptual delta. |
+| TEST-01 | Golden-image render-regression harness | infra | M | P1 | **MOTHBALLED (de-scoped 2026-06-03)** — scaffold parked under `tools/render_regression/`; needs gamedata assets + a render-capable runner the project doesn't maintain. Scripted level load, fixed cameras, per-backend capture, perceptual diff vs committed PNGs. |
+| TEST-02 | Wire regression harness into CI | infra | S | P1 | **MOTHBALLED (de-scoped 2026-06-03)** — depends on TEST-01; CI workflow de-registered (`tools/render_regression/render-regression.yml.parked`). |
 | TEST-03 | Unit tests for `xrCore` math | test | M | P2 | Matrix/quaternion/vector — pure, deterministic, high-value first test target. |
 | TEST-04 | clang-tidy static analysis in CI | infra | M | P2 | Start with a curated rule set; ratchet over time. |
 | TEST-05 | ASan/UBSan build configuration | infra | M | P2 | Catch memory/UB bugs the X-Ray codebase is prone to. |
