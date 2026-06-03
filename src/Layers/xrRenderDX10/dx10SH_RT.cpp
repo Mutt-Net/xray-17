@@ -80,8 +80,19 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount)
 	bool bUseAsDepth = (usage == D3DUSAGE_RENDERTARGET) ? false : true;
 
 	// Validate format supports the required usage on this device.
+	// For depth formats we store a typeless texture (e.g. R24G8_TYPELESS) but bind it
+	// with a typed DSV (D24_UNORM_S8_UINT). CheckFormatSupport on a typeless format
+	// returns no DEPTH_STENCIL flag, so use the typed view format for that check.
+	DXGI_FORMAT checkFMT = dx10FMT;
+	if (bUseAsDepth)
+	{
+		if      (dx10FMT == DXGI_FORMAT_R24G8_TYPELESS)      checkFMT = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		else if (dx10FMT == DXGI_FORMAT_R32_TYPELESS)        checkFMT = DXGI_FORMAT_D32_FLOAT;
+		else if (dx10FMT == DXGI_FORMAT_R16_TYPELESS)        checkFMT = DXGI_FORMAT_D16_UNORM;
+		else if (dx10FMT == DXGI_FORMAT_R32G8X24_TYPELESS)   checkFMT = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+	}
 	UINT FormatSupport = 0;
-	if (FAILED(HW.pDevice->CheckFormatSupport(dx10FMT, &FormatSupport))) return;
+	if (FAILED(HW.pDevice->CheckFormatSupport(checkFMT, &FormatSupport))) return;
 	if (!(FormatSupport & D3D_FORMAT_SUPPORT_TEXTURE2D)) return;
 	if (!(FormatSupport & (bUseAsDepth ? D3D_FORMAT_SUPPORT_DEPTH_STENCIL : D3D_FORMAT_SUPPORT_RENDER_TARGET))) return;
 
