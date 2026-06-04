@@ -69,7 +69,7 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | CRASH-05 | `[code]` | Hang watchdog |
 | CRASH-02 | `[infra]` | Symbol server for release PDBs |
 | CRASH-03 | `[infra]` | Opt-in crash telemetry |
-| DOCS-01..05 | `[code]` | Architecture overview, onboarding, per-subsystem READMEs, modder API, R3≈R4 note. ✓ **DOCS-02 DONE** (`docs/building.md`), ✓ **DOCS-05 DONE** (`docs/render-r3-r4-mirror.md`) — 2026-06-03 |
+| DOCS-01..05 | `[code]` | ✓ **DOCS-01 DONE** (`docs/architecture.md`), ✓ **DOCS-02 DONE** (`docs/building.md`), ✓ **DOCS-05 DONE** (`docs/render-r3-r4-mirror.md`) — 2026-06-03/04. Remaining: DOCS-03 (per-subsystem READMEs), DOCS-04 (modder API ref). |
 | SEC-01 | `[code]` | Audit crypto module |
 | SEC-02..04 | `[code]`/`[runtime]` | Harden asset/config parsing, save integrity, net protocol |
 
