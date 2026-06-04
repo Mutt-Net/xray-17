@@ -53,10 +53,10 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | MEM-01 | `[code]` | ✓ **DONE 2026-06-03** — exes are x64 + `/LARGEADDRESSAWARE` (verified from link flags) |
 | BUILD-03 | `[infra]` | Re-enable MSVC presets in release matrix |
 | BUILD-04 | `[infra]` | ccache/sccache in CI |
-| BUILD-07 | `[code]` | Pin Externals submodule revisions |
+| BUILD-07 | `[code]` | ✓ **DONE 2026-06-04** — `docs/submodules.md` records pinned SHAs + anti-drift policy; fixed a duplicate `Externals/optick-git` stanza in `.gitmodules` |
 | BUILD-09 | `[code]` | dev integration branch + branch protection (**dev branch DONE 2026-06-03**) |
 | BUILD-10 | `[infra]` | Automated changelog from commits |
-| BUILD-12 | `[code]` | Fix `vswhere.exe not recognized` warning |
+| BUILD-12 | `[code]` | ✗ **WON'T FIX 2026-06-04** — the `vswhere` logic is in the vendored `Externals/WindowsToolchain` submodule (`VSWhere.cmake`); the message is benign (build succeeds, vswhere is found) and patching a submodule would diverge it. Upstream-only fix. |
 | BUILD-01/02 | `[infra]` | Register runners (**Windows runner DONE**; Linux pending) |
 | BUILD-05/06/08/11 | `[infra]` | PCH/unity audit, build-time profiling, reproducible builds, PDB archival |
 
