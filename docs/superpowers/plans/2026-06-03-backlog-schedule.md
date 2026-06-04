@@ -50,7 +50,7 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | CODE-02 | `[code]` | Selective C++20 adoption |
 | CODE-06 | `[infra]` | Enable IWYU |
 | CODE-07 | `[infra]` | clang-format baseline |
-| MEM-01 | `[code]` | Confirm 64-bit / Large-Address-Aware |
+| MEM-01 | `[code]` | ✓ **DONE 2026-06-03** — exes are x64 + `/LARGEADDRESSAWARE` (verified from link flags) |
 | BUILD-03 | `[infra]` | Re-enable MSVC presets in release matrix |
 | BUILD-04 | `[infra]` | ccache/sccache in CI |
 | BUILD-07 | `[code]` | Pin Externals submodule revisions |
@@ -69,7 +69,7 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | CRASH-05 | `[code]` | Hang watchdog |
 | CRASH-02 | `[infra]` | Symbol server for release PDBs |
 | CRASH-03 | `[infra]` | Opt-in crash telemetry |
-| DOCS-01..05 | `[code]` | Architecture overview, onboarding, per-subsystem READMEs, modder API, R3≈R4 note |
+| DOCS-01..05 | `[code]` | Architecture overview, onboarding, per-subsystem READMEs, modder API, R3≈R4 note. ✓ **DOCS-02 DONE** (`docs/building.md`), ✓ **DOCS-05 DONE** (`docs/render-r3-r4-mirror.md`) — 2026-06-03 |
 | SEC-01 | `[code]` | Audit crypto module |
 | SEC-02..04 | `[code]`/`[runtime]` | Harden asset/config parsing, save integrity, net protocol |
 
