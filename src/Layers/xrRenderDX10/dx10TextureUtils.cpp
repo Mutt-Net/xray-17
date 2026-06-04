@@ -14,9 +14,11 @@ namespace dx10TextureUtils
 		//D3DFMT_R8G8B8 Not available 
 		{D3DFMT_A8R8G8B8, DXGI_FORMAT_R8G8B8A8_UNORM}, // Not available 
 		//D3DFMT_X8R8G8B8 Not available 
-		//	nullrt only: R5G6B5 mapped to R8G8B8A8 (B5G6R5 not available)
-		//{ D3DFMT_R5G6B5,		DXGI_FORMAT_B5G6R5_UNORM },		// Not available
-		{D3DFMT_R5G6B5, DXGI_FORMAT_R8G8B8A8_UNORM}, // Not available 
+		//	nullrt: D3DFMT_R5G6B5 maps to R8G8B8A8 by design. R5G6B5 is used only for the 'null'
+		//	render target — a dummy RT bound where the API requires one but the output is discarded
+		//	— so the exact format is immaterial and this 32-bit fallback is permanent. (RND-04;
+		//	DXGI_FORMAT_B5G6R5_UNORM exists on DXGI 1.2+ but offers nothing here.)
+		{D3DFMT_R5G6B5, DXGI_FORMAT_R8G8B8A8_UNORM},
 		//D3DFMT_X1R5G5B5 Not available 
 		//D3DFMT_A1R5G5B5 Not available 
 		//D3DFMT_A4R4G4B4 Not available 

@@ -46,26 +46,11 @@ public:
 
 	adopt_dx10sampler(const adopt_dx10sampler& _C) : m_pC(_C.m_pC), m_SI(_C.m_SI) { if (u32(-1) == m_SI) m_pC = 0; }
 
-	//	adopt_sampler&			_texture		(LPCSTR texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
-	//	adopt_sampler&			_projective		(bool _b)				{ if (C) C->i_Projective(stage,_b);													return *this;	}
+	// DX10/11 samplers are immutable state objects: filter / address / mip modes are baked into
+	// the sampler state, not set per draw. Only address-clamp is exposed to script (blenders that
+	// must clamp a specific stage). The DX9 per-call sampler API (wrap/mirror/filter/min/mip/mag)
+	// has no DX10 equivalent here and is intentionally not ported. (RND-08)
 		adopt_dx10sampler&	    _clamp			()						{ if (m_pC) m_pC->i_dx10Address	(m_SI,D3DTADDRESS_CLAMP);							return *this;	}
-	//	adopt_sampler&			_wrap			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_WRAP);									return *this;	}
-	//	adopt_sampler&			_mirror			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_MIRROR);									return *this;	}
-	//	adopt_sampler&			_f_anisotropic	()						{ if (C) C->i_Filter	(stage,D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,D3DTEXF_ANISOTROPIC);	return *this;	}
-	//	adopt_sampler&			_f_trilinear	()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_LINEAR,D3DTEXF_LINEAR);		return *this;	}
-	//	adopt_sampler&			_f_bilinear		()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_POINT, D3DTEXF_LINEAR);		return *this;	}
-	//	adopt_sampler&			_f_linear		()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_NONE,  D3DTEXF_LINEAR);		return *this;	}
-	//	adopt_sampler&			_f_none			()						{ if (C) C->i_Filter	(stage,D3DTEXF_POINT, D3DTEXF_NONE,  D3DTEXF_POINT);		return *this;	}
-	//	adopt_sampler&			_fmin_none		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_NONE);										return *this;	}
-	//	adopt_sampler&			_fmin_point		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_POINT);										return *this;	}
-	//	adopt_sampler&			_fmin_linear	()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_LINEAR);										return *this;	}
-	//	adopt_sampler&			_fmin_aniso		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_ANISOTROPIC);								return *this;	}
-	//	adopt_sampler&			_fmip_none		()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_NONE);										return *this;	}
-	//	adopt_sampler&			_fmip_point		()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_POINT);										return *this;	}
-	//	adopt_sampler&			_fmip_linear	()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_LINEAR);										return *this;	}
-	//	adopt_sampler&			_fmag_none		()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_NONE);										return *this;	}
-	//	adopt_sampler&			_fmag_point		()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_POINT);										return *this;	}
-	//	adopt_sampler&			_fmag_linear	()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_LINEAR);										return *this;	}
 };
 
 /*
@@ -365,26 +350,8 @@ void CResourceManager::LS_Load()
 
 
 		class_<adopt_dx10sampler>("_dx10sampler")
-			//.def("texture",						&adopt_sampler::_texture		,return_reference_to<1>())
-		//.def("project",						&adopt_sampler::_projective		,return_reference_to<1>())
+		// Only clamp is scriptable on DX10/11 samplers; see adopt_dx10sampler (RND-08).
 		.def("clamp",						&adopt_dx10sampler::_clamp			,return_reference_to<1>())
-		//.def("wrap",						&adopt_sampler::_wrap			,return_reference_to<1>())
-		//.def("mirror",						&adopt_sampler::_mirror			,return_reference_to<1>())
-		//.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	,return_reference_to<1>())
-		//.def("f_trilinear",					&adopt_sampler::_f_trilinear	,return_reference_to<1>())
-		//.def("f_bilinear",					&adopt_sampler::_f_bilinear		,return_reference_to<1>())
-		//.def("f_linear",					&adopt_sampler::_f_linear		,return_reference_to<1>())
-		//.def("f_none",						&adopt_sampler::_f_none			,return_reference_to<1>())
-		//.def("fmin_none",					&adopt_sampler::_fmin_none		,return_reference_to<1>())
-		//.def("fmin_point",					&adopt_sampler::_fmin_point		,return_reference_to<1>())
-		//.def("fmin_linear",					&adopt_sampler::_fmin_linear	,return_reference_to<1>())
-		//.def("fmin_aniso",					&adopt_sampler::_fmin_aniso		,return_reference_to<1>())
-		//.def("fmip_none",					&adopt_sampler::_fmip_none		,return_reference_to<1>())
-		//.def("fmip_point",					&adopt_sampler::_fmip_point		,return_reference_to<1>())
-		//.def("fmip_linear",					&adopt_sampler::_fmip_linear	,return_reference_to<1>())
-		//.def("fmag_none",					&adopt_sampler::_fmag_none		,return_reference_to<1>())
-		//.def("fmag_point",					&adopt_sampler::_fmag_point		,return_reference_to<1>())
-		//.def("fmag_linear",					&adopt_sampler::_fmag_linear	,return_reference_to<1>())
 		,
 
 		class_<adopt_compiler>("_compiler")

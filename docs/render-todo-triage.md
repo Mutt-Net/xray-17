@@ -216,3 +216,24 @@ What is retained (parked, not active), so the effort can be revived without redo
 To revive: move the `.parked` workflow back under `.github/workflows/`, implement the engine-side
 capture driver, stage a level fixture + assets on a runner, capture goldens. Until then TEST-01/02
 are **not scheduled**.
+
+---
+
+## Sprint s4 dispositions (2026-06-03) — Epic RND finish (Track A)
+
+Track A completion. Investigation-led: the remaining Group H/RND items are mostly already
+knowledge comments per this doc's own classification; s4 closes them with evidence.
+
+| Ticket | Disposition |
+|--------|-------------|
+| RND-04 | ✓ Done — `nullrt` R5G6B5→R8G8B8A8 documented as a permanent by-design fallback (the null RT discards output, so format is immaterial). `dx10TextureUtils.cpp`. |
+| RND-05 | ✓ Reviewed — the `stub_default.{vs,ps,gs}` fallback on a missing shader (`dx10ResourceManager_Resources.cpp:177,289,389`) is deliberate defensive behaviour (log + load stub rather than crash), not a defect. No change; documented here. |
+| RND-06 | ✓ Reviewed — `dx10StateCache.cpp:55,68,81` are `#ifdef DEBUG` state-creation log lines, **not** DX9 leftovers. The DX9 cache was already gone. No change needed. |
+| RND-07 | ✓ Done — triangle-fan: audit confirms **zero live `D3DPT_TRIANGLEFAN` callers** in the DX10/11 renderers (only the topology-table `UNDEFINED` mapping + the intentional early-return in `Render()`). Dead path, correctly documented; no decomposition needed. |
+| RND-08 | ✓ Done — removed the dead DX9 per-call sampler-API comments + commented luabind `.def`s from `dx10ResourceManager_Scripting.cpp`; left a note that DX10/11 samplers are immutable state objects so only `clamp` is scriptable. |
+| RND-09 | ⏸ Deferred `[runtime]` — `dx10r_constants.cpp:150` `VERIFY(!"Implement shader object parsing")` is a genuine not-implemented stub in shader-reflection. Implementing object (sampler/texture) parsing safely needs the shader pipeline at runtime; deferred to a runtime-capable sprint, not force-changed blind. |
+| RND-10 | ✓ Done — this audit IS the TODO/HACK sweep; remaining markers in the render dirs are classified above as knowledge comments / deferred, none are silent defects. |
+| RND-11 | ✓ Done — R3/R4 parity: none of the s3/s4 edits touch R3-vs-R4 mirror code (all land in shared `xrRender/` or `xrRenderDX10/`), so the pair stays in sync by construction. Parity rule captured for contributors in DOCS-05 (backlog). |
+
+Net Epic RND status: **Track A complete** except RND-09 (runtime-gated) — all other port-completion
+items are resolved or evidenced as already-correct.
