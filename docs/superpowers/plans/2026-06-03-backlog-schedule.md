@@ -71,7 +71,7 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | CRASH-02 | `[infra]` | Symbol server for release PDBs |
 | CRASH-03 | `[infra]` | Opt-in crash telemetry |
 | DOCS-01..05 | `[code]` | ✓ **DOCS-01** (`docs/architecture.md`), ✓ **DOCS-02** (`docs/building.md`), ✓ **DOCS-04** (`docs/modding-api.md`), ✓ **DOCS-05** (`docs/render-r3-r4-mirror.md`) — 2026-06-03/05. Remaining: DOCS-03 (per-subsystem READMEs). |
-| SEC-01 | `[code]` | Audit crypto module |
+| SEC-01 | `[code]` | ✓ **DONE 2026-06-06** — audited `src/xrCore/crypto/` (`docs/security-crypto-audit.md`). Findings: DSA-1024 + SHA-1 (both legacy); `xr_sha256` is a misnomer — it's actually SHA-1. Low immediate risk in the baked-in-key verify model; no code changed (algo swaps break signature compatibility + are runtime-untestable). Safe follow-up: rename `xr_sha256`→`xr_sha1`. |
 | SEC-02..04 | `[code]`/`[runtime]` | Harden asset/config parsing, save integrity, net protocol |
 
 ## Sprint s7 — Performance (profile-first)
