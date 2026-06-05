@@ -249,7 +249,7 @@ u32 CMemoryManager::memory_time(const CObject* object) const
 	if (!this->object().g_Alive())
 		return (0);
 
-	const CGameObject* game_object = smart_cast<const CGameObject*>(object);
+	[[maybe_unused]] const CGameObject* game_object = smart_cast<const CGameObject*>(object);
 	VERIFY(game_object);
 
 	{
@@ -283,7 +283,7 @@ Fvector CMemoryManager::memory_position(const CObject* object) const
 	if (!this->object().g_Alive())
 		return (result);
 
-	const CGameObject* game_object = smart_cast<const CGameObject*>(object);
+	[[maybe_unused]] const CGameObject* game_object = smart_cast<const CGameObject*>(object);
 	VERIFY(game_object);
 
 	{

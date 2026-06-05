@@ -92,7 +92,7 @@ void SMusicTrack::Load(LPCSTR fn, LPCSTR params)
 	m_SourceStereo.create(fn, st_Music, sg_Undefined);
 
 	// parse params
-	int cnt = _GetItemCount(params);
+	[[maybe_unused]] int cnt = _GetItemCount(params);
 	VERIFY(cnt==5);
 	m_ActiveTime.set(0, 0);
 	m_PauseTime.set(0, 0);

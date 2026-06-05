@@ -871,7 +871,7 @@ Fvector CEntityAlive::get_new_local_point_on_mesh(u16& bone_id) const
 		if (!kinematics->LL_GetBoneVisible((*i).first))
 			continue;
 
-		SBoneShape const& shape = kinematics->LL_GetData((*i).first).shape;
+		[[maybe_unused]] SBoneShape const& shape = kinematics->LL_GetData((*i).first).shape;
 		VERIFY(shape.type != SBoneShape::stNone);
 		VERIFY(!shape.flags.is(SBoneShape::sfNoPickable));
 
@@ -887,7 +887,7 @@ Fvector CEntityAlive::get_new_local_point_on_mesh(u16& bone_id) const
 		if (!kinematics->LL_GetBoneVisible((*i).first))
 			continue;
 
-		SBoneShape const& shape = kinematics->LL_GetData((*i).first).shape;
+		[[maybe_unused]] SBoneShape const& shape = kinematics->LL_GetData((*i).first).shape;
 		VERIFY(shape.type != SBoneShape::stNone);
 		VERIFY(!shape.flags.is(SBoneShape::sfNoPickable));
 

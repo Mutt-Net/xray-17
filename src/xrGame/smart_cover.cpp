@@ -79,7 +79,7 @@ cover::cover(
 	{
 		Fvector position = this->fov_position(**J);
 		position.y += 2.0f;
-		u32 level_vertex_id = graph.vertex_id(position);
+		[[maybe_unused]] u32 level_vertex_id = graph.vertex_id(position);
 		VERIFY2(
 			graph.valid_vertex_id(level_vertex_id),
 			make_string(

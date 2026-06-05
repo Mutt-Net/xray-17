@@ -959,7 +959,7 @@ extern BOOL useNewZoomDeltaAlgorithm;
 void NewGetZoomData(const float scope_factor, const float zoom_step_count, float& delta, float& min_zoom_factor, float zoom, float min_zoom)
 {
 	float def_fov = float(g_fov);
-	float delta_factor_total = def_fov - scope_factor;
+	[[maybe_unused]] float delta_factor_total = def_fov - scope_factor;
 	VERIFY(delta_factor_total > 0);
 	float loc_min_zoom_factor = ((atan(tan(def_fov * (0.5f * PI / 180)) / g_ironsights_factor) / (0.5f * PI / 180)) / 0.75f) * (scope_radius > 0.f ? scope_scrollpower : 1);
 

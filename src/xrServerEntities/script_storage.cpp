@@ -1058,7 +1058,7 @@ bool CScriptStorage::load_file_into_namespace(LPCSTR caScriptName, LPCSTR caName
 
 bool CScriptStorage::namespace_loaded(LPCSTR N, bool remove_from_stack)
 {
-	int start = lua_gettop(lua());
+	[[maybe_unused]] int start = lua_gettop(lua());
 	lua_pushstring(lua(), "_G");
 	lua_rawget(lua(), LUA_GLOBALSINDEX);
 	string256 S2;
@@ -1116,7 +1116,7 @@ bool CScriptStorage::namespace_loaded(LPCSTR N, bool remove_from_stack)
 
 bool CScriptStorage::object(LPCSTR identifier, int type)
 {
-	int start = lua_gettop(lua());
+	[[maybe_unused]] int start = lua_gettop(lua());
 	lua_pushnil(lua());
 	while (lua_next(lua(), -2))
 	{
@@ -1137,7 +1137,7 @@ bool CScriptStorage::object(LPCSTR identifier, int type)
 
 bool CScriptStorage::object(LPCSTR namespace_name, LPCSTR identifier, int type)
 {
-	int start = lua_gettop(lua());
+	[[maybe_unused]] int start = lua_gettop(lua());
 	if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name, false))
 	{
 		VERIFY(lua_gettop(lua()) == start);

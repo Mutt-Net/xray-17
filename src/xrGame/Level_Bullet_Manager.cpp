@@ -588,7 +588,7 @@ static float trajectory_select_pick_parabolic(
 	float const max_test_distance = bullet.max_dist - bullet.fly_dist;
 	Fvector const start = trajectory_position(bullet.start_position, bullet.start_velocity, gravity, air_resistance,
 	                                          start_low);
-	float const start_high = high;
+	[[maybe_unused]] float const start_high = high;
 	float low = start_low;
 	float check_time = high;
 	while (!fsimilar(low, high))
@@ -619,7 +619,7 @@ static bool trajectory_select_pick_ranges(
 	float const air_resistance
 )
 {
-	float const max_test_distance = bullet.max_dist - bullet.fly_dist;
+	[[maybe_unused]] float const max_test_distance = bullet.max_dist - bullet.fly_dist;
 	VERIFY(max_test_distance > 0.f);
 
 	if (air_resistance * (low + air_resistance_epsilon) >= 1.f)

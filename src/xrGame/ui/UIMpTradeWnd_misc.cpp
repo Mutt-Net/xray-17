@@ -226,7 +226,7 @@ bool CUIMpTradeWnd::OnItemDrop(CUICellItem* itm)
 	if (_new_owner_type == dd_shop)
 	{
 		SBuyItemInfo* tmp_iinfo = NULL;
-		bool res = TryToSellItem(iinfo, true, tmp_iinfo);
+		[[maybe_unused]] bool res = TryToSellItem(iinfo, true, tmp_iinfo);
 		VERIFY(res);
 		return true;
 	}

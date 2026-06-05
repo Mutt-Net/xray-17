@@ -184,7 +184,7 @@ int CDbgLuaHelper::hookLuaBind(lua_State* l)
 {
 	if (!m_pThis) return 0;
 	L = l;
-	int top1 = lua_gettop(L);
+	[[maybe_unused]] int top1 = lua_gettop(L);
 
 	Msg("hookLuaBind start");
 	print_stack(L);
@@ -204,7 +204,7 @@ int CDbgLuaHelper::hookLuaBind(lua_State* l)
 	if (lua_isstring(L, -1))
 		Msg("Tope string %s",lua_tostring(L, -1));
 
-	int top2 = lua_gettop(L);
+	[[maybe_unused]] int top2 = lua_gettop(L);
 	VERIFY(top2==top1);
 	return 0;
 }
@@ -213,7 +213,7 @@ void CDbgLuaHelper::hookLua(lua_State* l, lua_Debug* ar)
 {
 	if (!m_pThis) return;
 	L = l;
-	int top1 = lua_gettop(L);
+	[[maybe_unused]] int top1 = lua_gettop(L);
 
 	//	Msg	("hookLua start");
 	//	print_stack(L);
@@ -233,7 +233,7 @@ void CDbgLuaHelper::hookLua(lua_State* l, lua_Debug* ar)
 	//	Msg	("hookLua end");
 	//	print_stack(L);
 
-	int top2 = lua_gettop(L);
+	[[maybe_unused]] int top2 = lua_gettop(L);
 	VERIFY(top2==top1);
 }
 

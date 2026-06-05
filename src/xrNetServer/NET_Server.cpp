@@ -58,7 +58,7 @@ void IBannedClient::Load(CInifile& ini, const shared_str& sect)
 
 	tm _tm_banned;
 	const shared_str& time_to = ini.r_string(sect, "time_to");
-	int res_t = sscanf(time_to.c_str(),
+	[[maybe_unused]] int res_t = sscanf(time_to.c_str(),
 	                   "%02d.%02d.%d_%02d:%02d:%02d",
 	                   &_tm_banned.tm_mday,
 	                   &_tm_banned.tm_mon,

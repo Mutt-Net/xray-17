@@ -156,7 +156,7 @@ void monster_aura::remove_pp_effector()
 float monster_aura::get_post_process_factor() const
 {
 	using namespace detail;
-	float pp_highest_at = override_if_debug(s_pp_highest_at_string, m_pp_highest_at);
+	[[maybe_unused]] float pp_highest_at = override_if_debug(s_pp_highest_at_string, m_pp_highest_at);
 	VERIFY(pp_highest_at != 0.f);
 
 	float factor = calculate() / m_pp_highest_at;

@@ -336,7 +336,7 @@ void imotion_position::state_end()
 void imotion_position::disable_update(bool v)
 {
 	VERIFY(shell);
-	IKinematics* K = shell->PKinematics();
+	[[maybe_unused]] IKinematics* K = shell->PKinematics();
 	VERIFY(K);
 	//K->SetUpdateCallback( v ? 0 : saved_visual_callback );
 	update_callback.update = !v;

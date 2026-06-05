@@ -315,7 +315,7 @@ void Manager::test_all_upgrades( CInventoryItem& item )
 
 		Upgrade* Manager::upgrade_verify(shared_str const& item_section, shared_str const& upgrade_id)
 		{
-			Root* root_p = get_root(item_section);
+			[[maybe_unused]] Root* root_p = get_root(item_section);
 			VERIFY2(root_p,
 			        make_string( "Upgrades of item <%s> don`t exist!", item_section.c_str() ));
 

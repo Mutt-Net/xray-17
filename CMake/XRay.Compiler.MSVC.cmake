@@ -24,6 +24,10 @@ set(XRAY_COMPILER_FLAGS
     /wd4005
     # Disable variable shadowing warnings
     /wd4458
+    # luabind's module(L)[a, b] uses an overloaded operator, (scope-combining), NOT the built-in
+    # comma operator C4709 is meant to catch in a subscript. False positive across every
+    # script_register / *_script.cpp. (CODE-01)
+    /wd4709
     # Use updated __cplusplus macro
     /Zc:__cplusplus
 )
@@ -34,8 +38,6 @@ set(XRAY_COMPILER_FLAGS_DEBUG
     /Z7
     # Don't omit frame pointers
     /Oy-
-    # Warning level 4
-    /W4
     # Enable security check
     /GS
     # Enable exceptions

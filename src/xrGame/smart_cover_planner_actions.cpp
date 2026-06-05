@@ -111,8 +111,8 @@ void change_loophole::select_animation(shared_str& result)
 	smart_cover::transitions::animation_action const& animation = object().movement().current_transition().animation(
 		object().movement().target_body_state());
 	VERIFY(object().movement().current_params().cover());
-	smart_cover::cover const& cover = *object().movement().current_params().cover();
-	shared_str const& cover_loophole_id = object().movement().current_params().cover_loophole_id();
+	[[maybe_unused]] smart_cover::cover const& cover = *object().movement().current_params().cover();
+	[[maybe_unused]] shared_str const& cover_loophole_id = object().movement().current_params().cover_loophole_id();
 
 	VERIFY2(
 		cover.description()->transitions().edge(cover_loophole_id, smart_cover::transform_vertex("", false)),

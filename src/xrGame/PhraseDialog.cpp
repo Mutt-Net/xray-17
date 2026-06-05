@@ -200,7 +200,7 @@ LPCSTR CPhraseDialog::GetPhraseText(const shared_str& phrase_id, bool current_sp
 				parameters_table[k + 1] = tmp;
 			}
 
-			bool functor_exists = ai().script_engine().functor(str, lua_function);
+			[[maybe_unused]] bool functor_exists = ai().script_engine().functor(str, lua_function);
 			THROW3(functor_exists, "Cannot find phrase script text ", (ph->m_script_text_id.length() == 0) ? ph->GetText() : ph->m_script_text_id.c_str());
 			ph->m_script_text_val = lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), m_DialogId.c_str(), phrase_id.c_str(), "", parameters_table);
 			return ph->m_script_text_val.c_str();
@@ -211,7 +211,7 @@ LPCSTR CPhraseDialog::GetPhraseText(const shared_str& phrase_id, bool current_sp
     if (ph->m_script_text_id.length() > 0)
     {
         ::luabind::functor<LPCSTR> lua_function;
-        bool functor_exists = ai().script_engine().functor(ph->m_script_text_id.c_str(), lua_function);
+        [[maybe_unused]] bool functor_exists = ai().script_engine().functor(ph->m_script_text_id.c_str(), lua_function);
         THROW3(functor_exists, "Cannot find function", ph->m_script_text_id.c_str());
 
         ph->m_script_text_val = lua_function((pSpeakerGO) ? pSpeakerGO->lua_game_object() : NULL, m_DialogId.c_str(),phrase_id.c_str());
@@ -267,13 +267,13 @@ void CPhraseDialog::load_shared(LPCSTR)
 		LPCSTR func = pXML->Read(dialog_node, "init_func", 0, "");
 
 		::luabind::functor<void> lua_function;
-		bool functor_exists = ai().script_engine().functor(func, lua_function);
+		[[maybe_unused]] bool functor_exists = ai().script_engine().functor(func, lua_function);
 		THROW3(functor_exists, "Cannot find precondition", func);
 		lua_function(this);
 		return;
 	}
 
-	int phrase_num = pXML->GetNodesNum(phrase_list_node, "phrase");
+	[[maybe_unused]] int phrase_num = pXML->GetNodesNum(phrase_list_node, "phrase");
 	THROW3(phrase_num, "dialog %s has no phrases at all", *item_data.id);
 
 	pXML->SetLocalRoot(phrase_list_node);

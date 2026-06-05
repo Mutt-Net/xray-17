@@ -1047,7 +1047,7 @@ void CCharacterPhysicsSupport::AddActiveWeaponCollision()
 	}
 	if (br2 != bl && br2 != br && br2 != -1)
 	{
-		CPhysicsElement* p = m_pPhysicsShell->get_PhysicsParrentElement((u16)br2);
+		[[maybe_unused]] CPhysicsElement* p = m_pPhysicsShell->get_PhysicsParrentElement((u16)br2);
 		VERIFY(p);
 		bone_chain_disable((u16)br2, weapon_attach_bone->m_SelfID, *m_pPhysicsShell->PKinematics());
 	}

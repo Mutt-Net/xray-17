@@ -95,6 +95,12 @@ function(add_module NAME)
   # Add our module
   add_library(${NAME} ${ARG_TYPE})
 
+  # First-party code builds at the high warning level (CODE-01). Externals are exempt —
+  # they keep the global /WX but not /W4 — since we don't control vendored sources.
+  if(NOT ARG_TYPE STREQUAL INTERFACE)
+    target_compile_options(${NAME} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4>)
+  endif()
+
   # Find our parent module
   find_parent(${NAME} PARENT)
 

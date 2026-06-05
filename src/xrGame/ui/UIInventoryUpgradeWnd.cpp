@@ -277,7 +277,7 @@ bool CUIInventoryUpgradeWnd::install_item(CInventoryItem& inv_item, bool can_upg
 			shared_str prop_name = upgrade_p->get_property_name(i);
 			if (prop_name.size())
 			{
-				Property_type* prop_p = get_manager().get_property(prop_name);
+				[[maybe_unused]] Property_type* prop_p = get_manager().get_property(prop_name);
 				VERIFY(prop_p);
 			}
 		}

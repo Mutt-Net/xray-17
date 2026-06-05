@@ -86,7 +86,7 @@ void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEvent
 	case ControlCom::eventAnimationStart: // handle blend params
 		{
 			// set animation speed
-			SControlAnimationData* ctrl_data_anim = (SControlAnimationData*)m_man->data(
+			[[maybe_unused]] SControlAnimationData* ctrl_data_anim = (SControlAnimationData*)m_man->data(
 				this, ControlCom::eControlAnimation);
 			VERIFY(ctrl_data_anim);
 

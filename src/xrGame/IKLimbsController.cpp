@@ -64,7 +64,7 @@ void CIKLimbsController::LimbCalculate(SCalculateData& cd)
 
 void CIKLimbsController::LimbUpdate(CIKLimb& L)
 {
-	IKinematicsAnimated* skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
+	[[maybe_unused]] IKinematicsAnimated* skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	VERIFY(skeleton_animated);
 	L.Update(m_object, m_legs_blend, _pose_extrapolation);
 }
@@ -206,7 +206,7 @@ void CIKLimbsController::ObjectShift(float static_shift, const SCalculateData cd
 		if (cd[j].m_limb->foot_step())
 			++cnt_in_step;
 
-	CPhysicsShellHolder* sh = smart_cast<CPhysicsShellHolder*>(m_object);
+	[[maybe_unused]] CPhysicsShellHolder* sh = smart_cast<CPhysicsShellHolder*>(m_object);
 	VERIFY(sh);
 	//CCharacterPhysicsSupport *ch = sh->character_physics_support();	
 	_object_shift.freeze(!!Device.Paused()); //ch->interactive_motion() ||

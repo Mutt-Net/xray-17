@@ -37,14 +37,14 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | RND-10 | `[code]` | Sweep remaining TODO/HACK in render dirs; classify each |
 | RND-11 | `[code]` | R3/R4 parity check note/guard |
 | CODE-04 | `[code]` | ✓ **Substantially DONE 2026-06-05** — audited all render crash-stubs (`docs/code-04-crash-stub-audit.md`); no-op'd the debug ones (overdrawBegin/End, dbg_SetRS/SS); render/gameplay stubs (pick_bone, smap tsh, CHW::support, RND-09) left asserting + catalogued for `[runtime]` |
-| CODE-03 | `[code]` | Engine-wide dead/commented-code sweep (the `/* DX10 cut */` pattern) |
+| CODE-03 | `[code]` | ✓ **Substantially DONE 2026-06-05** — the high-value target (misleading `/* DX10 cut */` blocks that read as unimplemented features) is fully swept from the render layer (RND-01/08) and a tree-wide grep finds no others; remaining dead code is harmless commented `//VERIFY` knowledge comments (catalogued in the CODE-04 audit) + a few intentional `#if 0` reference blocks — left as-is (no maintenance burden, low value to churn). |
 | Track C | `[runtime]` | Debug-layer-clean DX11: the *audit* of warnings needs a running game; code fixes land as found |
 
 ## Sprint s5 — Code health + build/infra
 
 | Ticket | Tag | Note |
 |--------|-----|------|
-| CODE-01 | `[code]` | Raise warning level, clear warnings, then `-Werror` |
+| CODE-01 | `[code]` | ✓ **DONE 2026-06-06** — `/W4` now applies to all first-party targets in all configs (was Debug-only; scoped via `add_module` so vendored Externals are exempt), kept `/WX`. Fixed all 92 real C4189 (unused locals → `[[maybe_unused]]`) + 1 C4505 (debug-only `valid()`); documented-suppressed 163 luabind `module[a,b]` C4709 false-positives (`/wd4709`). Build clean at `/W4 /WX`, all 4 exes. |
 | CODE-05 | `[code]` | const-correctness pass |
 | CODE-08 | `[code]` | Smart-pointer adoption in new code |
 | CODE-02 | `[code]` | Selective C++20 adoption |

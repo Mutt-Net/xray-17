@@ -187,7 +187,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 			P.r_u16(id_src);
 
 
-			xrClientData* l_pC = ID_to_client(sender);
+			[[maybe_unused]] xrClientData* l_pC = ID_to_client(sender);
 			VERIFY(game && l_pC);
 #ifndef MASTER_GOLD
 			if ((game->Type() != eGameIDSingle) && l_pC && l_pC->owner)

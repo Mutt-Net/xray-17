@@ -160,7 +160,7 @@ struct CLoader
 	{
 		if (p(data, const_cast<object_type_traits::remove_const<T1>::type&>(data.first), true))
 		{
-			const bool value = object_type_traits::is_same<T1, LPCSTR>::value;
+			[[maybe_unused]] const bool value = object_type_traits::is_same<T1, LPCSTR>::value;
 			VERIFY(!value);
 			load_data(const_cast<object_type_traits::remove_const<T1>::type&>(data.first), stream, p);
 		}

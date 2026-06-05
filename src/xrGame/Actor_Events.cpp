@@ -329,8 +329,8 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	case GEG_PLAYER_DETACH_HOLDER:
 		{
 			if (!m_holder) break;
-			u16 id = P.r_u16();
-			CGameObject* GO = smart_cast<CGameObject*>(m_holder);
+			[[maybe_unused]] u16 id = P.r_u16();
+			[[maybe_unused]] CGameObject* GO = smart_cast<CGameObject*>(m_holder);
 			VERIFY(id==GO->ID());
 			use_Holder(NULL);
 		}

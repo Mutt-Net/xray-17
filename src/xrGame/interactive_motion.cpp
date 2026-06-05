@@ -83,7 +83,7 @@ void interactive_motion::setup(const MotionID& m, CPhysicsShell* s, float _angle
 void interactive_motion::shell_setup()
 {
 	VERIFY(shell);
-	IKinematics* K = shell->PKinematics();
+	[[maybe_unused]] IKinematics* K = shell->PKinematics();
 	VERIFY(K);
 }
 
@@ -122,7 +122,7 @@ void interactive_motion::state_end()
 void interactive_motion::update()
 {
 	VERIFY(shell);
-	IKinematics* K = shell->PKinematics();
+	[[maybe_unused]] IKinematics* K = shell->PKinematics();
 	VERIFY(K);
 
 

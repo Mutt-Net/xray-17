@@ -137,7 +137,7 @@ void CActor::RunTalkDialog(CInventoryOwner* talk_partner, bool disable_break)
 
 void CActor::StartTalk(CInventoryOwner* talk_partner)
 {
-	CGameObject* GO = smart_cast<CGameObject*>(talk_partner);
+	[[maybe_unused]] CGameObject* GO = smart_cast<CGameObject*>(talk_partner);
 	VERIFY(GO);
 	CInventoryOwner::StartTalk(talk_partner);
 

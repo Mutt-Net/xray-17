@@ -389,7 +389,7 @@ void CPHShellSplitterHolder::SplitElement(u16 aspl, PHSHELL_PAIR_VECTOR& out_she
 		CPhysicsElement* ee = out_shels.back().first->get_ElementByStoreOrder(0);
 		VERIFY(ee);
 		VERIFY(smart_cast<CPHElement *>(ee));
-		CPHElement* el = static_cast<CPHElement *>(ee);
+		[[maybe_unused]] CPHElement* el = static_cast<CPHElement *>(ee);
 		VERIFY(dBodyStateValide(el->get_body()));
 	}
 

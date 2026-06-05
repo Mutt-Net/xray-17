@@ -1914,7 +1914,7 @@ BOOL game_sv_CaptureTheArtefact::OnActivate(u16 eid_who, u16 eid_target)
 	                                                 });
 
 	CSE_ActorMP* e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
-	CSE_Abstract* e_item = m_server->ID_to_entity(eid_target);
+	[[maybe_unused]] CSE_Abstract* e_item = m_server->ID_to_entity(eid_target);
 
 	VERIFY2(e_who,
 	        make_string("failed to get actor entity (id = %d)",eid_who).c_str());

@@ -495,7 +495,7 @@ void CPHElement::PhDataUpdate(dReal step)
 		angular_velocity_mag = _sqrt(angular_velocity_smag);
 	}
 	////////////////secure position///////////////////////////////////////////////////////////////////////////////////
-	const dReal* position = dBodyGetPosition(m_body);
+	[[maybe_unused]] const dReal* position = dBodyGetPosition(m_body);
 	VERIFY(dV_valid(position));
 	/////////////////limit & secure angular vel///////////////////////////////////////////////////////////////////////////////
 	VERIFY(dV_valid(angular_velocity));
