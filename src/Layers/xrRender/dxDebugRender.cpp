@@ -141,8 +141,8 @@ void dxDebugRender::CacheSetCullMode(CullMode m)
 void dxDebugRender::SetAmbient(u32 colour)
 {
 #if defined(USE_DX10) || defined(USE_DX11)
-	//	TODO: DX10: Check if need this for DX10
-	VERIFY(!"Not implemented for DX10");
+	// D3DRS_AMBIENT is fixed-function ambient lighting — no DX10+ equivalent (ambient is
+	// shader-computed in the deferred path). No-op rather than crash. (CODE-04)
 #else	//	USE_DX10
 	CHK_DX(HW.pDevice->SetRenderState (D3DRS_AMBIENT, colour));
 #endif	//	USE_DX10

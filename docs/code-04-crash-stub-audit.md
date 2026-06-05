@@ -16,6 +16,7 @@ no-op, while *leaving* stubs that guard a genuine gameplay/render gap so the gap
 |------|----------|
 | `dxRenderDeviceRender.cpp` `overdrawBegin` / `overdrawEnd` | Overdraw visualisation is a DX9 stencil-counting **debug** mode; callers are guarded by `if (HW.Caps.SceneMode)`. No DX10+ fixed-function stencil-state setters. No-op degrades gracefully instead of crashing on toggle. (Also fixed the copy-paste assert message.) |
 | `R_Backend.h` `dbg_SetRS` / `dbg_SetSS` | Debug-only render/sampler-state setters, reached via `DU_DRAW_RS` in `D3DUtils`. Fixed-function state has no DX10+ equivalent; debug-draw now degrades instead of asserting. |
+| `dxDebugRender.cpp:145` `SetAmbient` | `D3DRS_AMBIENT` fixed-function ambient — no DX10+ equivalent (ambient is shader-computed in the deferred path). Debug render device; no-op'd. |
 
 ## Deferred `[runtime]` — do NOT no-op blind
 
@@ -26,11 +27,9 @@ no-op, while *leaving* stubs that guard a genuine gameplay/render gap so the gap
 | `dx10HW.cpp:1075` `CHW::support` | Hardware-capability query — wrong answer changes feature paths. (Group H P2.) |
 | `dx10r_constants.cpp:150` shader-object parsing | = **RND-09**; implementing sampler/texture reflection needs the live shader pipeline. |
 
-## Safe candidate — convert next pass
+## Safe candidates — convert next pass
 
-| Site | Note |
-|------|------|
-| `dxDebugRender.cpp:145` `SetAmbient` | Sets `D3DRS_AMBIENT` (fixed-function ambient) — no DX10 equivalent, debug render device. Safe to no-op; left out of the s4 pass only to keep that pass's build a verified unit. |
+(None remaining — `SetAmbient` was converted in the follow-up pass, see above.)
 
 ## Already harmless (commented — knowledge comments, no action)
 
