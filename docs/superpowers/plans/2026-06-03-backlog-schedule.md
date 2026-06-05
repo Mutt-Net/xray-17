@@ -1,5 +1,24 @@
 # Backlog Schedule — all epics/tickets assigned to sprints
 
+## Status snapshot — environment-completable work CLEARED (2026-06-06)
+
+Everything completable in the dev-only environment (Windows + VS18, **no game assets, no GPU,
+no live game runtime**) is **done or dispositioned** and shipped to `origin/dev`. Done this run:
+RND-01…11 (Track A; 09 deferred `[runtime]`), CODE-01 (project-wide `/W4 /WX`), CODE-03/04/07,
+BUILD-01/07/09/12, MEM-01, DOCS-01/02/04/05, SEC-01 (audit), TEST-01/02 mothballed; CODE-02/05/06/08
+dispositioned as incremental/tool-blocked.
+
+**What remains is the gated bulk** — needs the owner's gaming-PC environment:
+- `[runtime]` (game + assets + GPU): all PERF, AI, PHYS, ENV, SUBSYS, MOD, NET, most GFX/CFG/
+  INPUT/AUDIO, Track C debug-layer audit, the mothballed TEST harness.
+- `[hw]`: DISP (VRR/HDR/multi-mon), PLAT (Deck/ARM).
+- `[XL]`: GFX-01 (DX12/Vulkan R5), PERF-05 (threaded submit), GFX-13 (RT), REPLAY.
+- `[infra]`: clang-tidy, ccache, symbol server, Linux runner, IWYU tool (CODE-06 wired, tool absent).
+
+Safe focused follow-ups left undone (each needs a build): SEC-01 `xr_sha256`→`xr_sha1` rename.
+
+---
+
 **Created:** 2026-06-03. Schedules every ticket in `docs/future-development.md` §6 into a sprint,
 per owner request ("schedule all tasks on the backlog"). Ordering follows the dev plan's
 "Suggested epic ordering" (foundation → correctness → perceived → throughput → strategic) and the
