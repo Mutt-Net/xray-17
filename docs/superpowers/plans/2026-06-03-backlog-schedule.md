@@ -36,7 +36,7 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | RND-09 | `[code]` | Empty/obsolete TODO + `VERIFY(!"Implement shader object parsing")` (dx10r_constants.cpp:150) |
 | RND-10 | `[code]` | Sweep remaining TODO/HACK in render dirs; classify each |
 | RND-11 | `[code]` | R3/R4 parity check note/guard |
-| CODE-04 | `[code]` | Replace crash-stubs `VERIFY(!"...")` on hot paths |
+| CODE-04 | `[code]` | ✓ **Substantially DONE 2026-06-05** — audited all render crash-stubs (`docs/code-04-crash-stub-audit.md`); no-op'd the debug ones (overdrawBegin/End, dbg_SetRS/SS); render/gameplay stubs (pick_bone, smap tsh, CHW::support, RND-09) left asserting + catalogued for `[runtime]` |
 | CODE-03 | `[code]` | Engine-wide dead/commented-code sweep (the `/* DX10 cut */` pattern) |
 | Track C | `[runtime]` | Debug-layer-clean DX11: the *audit* of warnings needs a running game; code fixes land as found |
 

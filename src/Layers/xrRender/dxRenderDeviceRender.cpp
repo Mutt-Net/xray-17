@@ -200,8 +200,8 @@ void dxRenderDeviceRender::SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, B
 void dxRenderDeviceRender::overdrawBegin()
 {
 #if defined(USE_DX10) || defined(USE_DX11)
-	//	TODO: DX10: Implement overdrawBegin
-	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
+	// Overdraw visualisation is a DX9-era stencil-counting debug mode, unported to DX10+.
+	// No-op rather than crash so toggling it (HW.Caps.SceneMode) degrades gracefully. (CODE-04)
 #else	//	USE_DX10
 	// Turn stenciling
 	CHK_DX(HW.pDevice->SetRenderState( D3DRS_STENCILENABLE, TRUE ));
@@ -228,8 +228,8 @@ void dxRenderDeviceRender::overdrawBegin()
 void dxRenderDeviceRender::overdrawEnd()
 {
 #if defined(USE_DX10) || defined(USE_DX11)
-	//	TODO: DX10: Implement overdrawEnd
-	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
+	// Overdraw visualisation is a DX9-era stencil-counting debug mode, unported to DX10+.
+	// No-op rather than crash; pairs with overdrawBegin. (CODE-04)
 #else	//	USE_DX10
 	// Set up the stencil states
 	CHK_DX(HW.pDevice->SetRenderState( D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP ));

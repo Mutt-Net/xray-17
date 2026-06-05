@@ -440,16 +440,11 @@ public:
 	void dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
 	void dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 #if defined(USE_DX10) || defined(USE_DX11)
-	//	TODO: DX10: Implement this.
-	IC void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2)
-	{
-		VERIFY(!"Not implemented");
-	}
-
-	IC void dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value)
-	{
-		VERIFY(!"Not implemented");
-	}
+	// Debug-only render/sampler-state setters (reached via DU_DRAW_RS in D3DUtils). DX10+ has no
+	// fixed-function state setters; no-op rather than crash so debug-draw paths degrade gracefully
+	// instead of asserting. (CODE-04)
+	IC void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2) {}
+	IC void dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value) {}
 #else	//	USE_DX10
 	IC void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2)
 	{
