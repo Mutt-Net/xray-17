@@ -45,11 +45,12 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | Ticket | Tag | Note |
 |--------|-----|------|
 | CODE-01 | `[code]` | ✓ **DONE 2026-06-06** — `/W4` now applies to all first-party targets in all configs (was Debug-only; scoped via `add_module` so vendored Externals are exempt), kept `/WX`. Fixed all 92 real C4189 (unused locals → `[[maybe_unused]]`) + 1 C4505 (debug-only `valid()`); documented-suppressed 163 luabind `module[a,b]` C4709 false-positives (`/wd4709`). Build clean at `/W4 /WX`, all 4 exes. |
-| CODE-05 | `[code]` | const-correctness pass |
+| CODE-05 | `[code]` | ⏳ **Incremental — not a one-shot.** The dev plan tags it "Incremental". A blind whole-engine `const` sweep is unsafe here: adding `const` where an entity is later mutated / passed to a non-const API breaks compilation or shifts overload resolution, and there's no runtime test to catch behavioural change. Disposition: apply `const` opportunistically while editing a file (build-verified per change), NOT as a mass automated pass. Closed as "ongoing convention" rather than a completable ticket. |
 | CODE-08 | `[code]` | Smart-pointer adoption in new code |
 | CODE-02 | `[code]` | Selective C++20 adoption |
-| CODE-06 | `[infra]` | Enable IWYU |
-| CODE-07 | `[infra]` | clang-format baseline |
+| CODE-06 | `[infra]` | ⏸ **Already wired, tool-blocked** — `CMake/XRay.IWYU.cmake` has `USE_IWYU On`; the build just reports "IWYU: Not Found" because the include-what-you-use executable isn't installed on this machine. Needs the tool present on a runner to actually run; can't analyse here. |
+| CODE-07 | `[infra]` | ✓ **DONE 2026-06-06** — added a conservative `.clang-format` baseline (tabs, Allman, left pointers, `ColumnLimit: 0` so it never reflows existing code). Codifies the style for new/edited code; not applied wholesale. |
+| CODE-02 / CODE-08 | `[code]` | Deferred — CODE-02 (selective C++20) is open-ended/opportunistic; CODE-08 (smart-pointers in *new* code) is a forward convention, not a sweep. Both apply during other work, not as standalone tickets. |
 | MEM-01 | `[code]` | ✓ **DONE 2026-06-03** — exes are x64 + `/LARGEADDRESSAWARE` (verified from link flags) |
 | BUILD-03 | `[infra]` | Re-enable MSVC presets in release matrix |
 | BUILD-04 | `[infra]` | ccache/sccache in CI |

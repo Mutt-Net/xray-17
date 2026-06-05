@@ -1,0 +1,31 @@
+# X-Ray Monolith clang-format baseline (CODE-07).
+#
+# Codifies the engine's existing style so NEW/edited code can be formatted consistently with
+# what the CI style gate already half-enforces (tabs, LF, no trailing whitespace, terminating
+# newline — see .github/workflows/format-code.yml). Deliberately CONSERVATIVE:
+#   * ColumnLimit: 0  — never reflow existing lines (avoids a massive, risky reformat diff).
+#   * UseTab: Always  — the engine indents with tabs; the mixed-tabs gate enforces this.
+#   * Allman braces, left-aligned pointers — match the dominant existing style.
+#
+# This is a BASELINE, not applied wholesale. Run `clang-format` on a file you are already
+# editing; do not bulk-reformat the tree (that would fight the existing layout and explode diffs).
+---
+Language: Cpp
+BasedOnStyle: LLVM
+ColumnLimit: 0
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+BreakBeforeBraces: Allman
+PointerAlignment: Left
+ReferenceAlignment: Left
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+FixNamespaceComments: false
+SortIncludes: false
+KeepEmptyLinesAtTheStartOfBlocks: true
+SpaceBeforeParens: ControlStatements
+Cpp11BracedListStyle: false
+NamespaceIndentation: None
+...
