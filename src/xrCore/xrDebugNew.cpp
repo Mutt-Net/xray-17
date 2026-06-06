@@ -244,6 +244,18 @@ void xrDebug::backend(const char* expression, const char* description, const cha
 	buffer += xr_sprintf(buffer, sizeof(assertion_info) - u32(buffer - &assertion_info[0]),
 	                     "%sPress OK to abort execution%s", endline, endline);
 
+	buffer += xr_sprintf(buffer, sizeof(assertion_info) - u32(buffer - &assertion_info[0]),
+	                     "(Error info has been copied to clipboard)%s", endline);
+
+	if (xr_FS && FS.m_Flags.test(CLocatorAPI::flReady))
+	{
+		extern LPCSTR log_name();
+		string_path log_path;
+		FS.update_path(log_path, "$logs$", log_name());
+		buffer += xr_sprintf(buffer, sizeof(assertion_info) - u32(buffer - &assertion_info[0]),
+		                     "Log: %s%s", log_path, endline);
+	}
+
 	if (handler)
 		handler();
 
@@ -641,7 +653,7 @@ void save_mini_dump (_EXCEPTION_POINTERS* pExceptionInfo)
 
     if (GetModuleFileName( NULL, szDbgHelpPath, _MAX_PATH ))
     {
-        char* pSlash = strchr( szDbgHelpPath, '\\' );
+        char* pSlash = strrchr( szDbgHelpPath, '\\' );
         if (pSlash)
         {
             xr_strcpy (pSlash+1, sizeof(szDbgHelpPath)-(pSlash - szDbgHelpPath), "DBGHELP.DLL" );
@@ -697,26 +709,37 @@ void save_mini_dump (_EXCEPTION_POINTERS* pExceptionInfo)
             }
             if (hFile!=INVALID_HANDLE_VALUE)
             {
+                MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(
+                    MiniDumpWithDataSegs |
+                    MiniDumpWithIndirectlyReferencedMemory |
+                    MiniDumpWithFullMemoryInfo |
+                    MiniDumpWithThreadInfo
+                );
+
                 _MINIDUMP_EXCEPTION_INFORMATION ExInfo;
+                _MINIDUMP_EXCEPTION_INFORMATION* pExInfo = nullptr;
+                if (pExceptionInfo)
+                {
+                    ExInfo.ThreadId = ::GetCurrentThreadId();
+                    ExInfo.ExceptionPointers = pExceptionInfo;
+                    ExInfo.ClientPointers = NULL;
+                    pExInfo = &ExInfo;
+                }
 
-                ExInfo.ThreadId = ::GetCurrentThreadId();
-                ExInfo.ExceptionPointers = pExceptionInfo;
-                ExInfo.ClientPointers = NULL;
-
-                // write the dump
-                MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory );
-
-                BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, NULL, NULL );
+                BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, pExInfo, NULL, NULL );
                 if (bOK)
                 {
                     xr_sprintf( szScratch, "Saved dump file to '%s'", szDumpPath );
                     szResult = szScratch;
-                    // retval = EXCEPTION_EXECUTE_HANDLER;
+                    if (shared_str_initialized)
+                        Msg("* [crash] Minidump saved: %s", szDumpPath);
                 }
                 else
                 {
                     xr_sprintf( szScratch, "Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError() );
                     szResult = szScratch;
+                    if (shared_str_initialized)
+                        Msg("! [crash] Failed to write minidump: %s", szScratch);
                 }
                 ::CloseHandle(hFile);
             }
@@ -1123,6 +1146,17 @@ void debug_on_thread_spawn()
 #if 0// should be if we use exceptions
     std::set_unexpected(_terminate);
 #endif
+}
+
+void xrDebug::force_dump_and_exit(const char* reason)
+{
+    if (shared_str_initialized)
+        Msg("! [HANG] %s", reason);
+    FlushLog();
+#ifdef USE_OWN_MINI_DUMP
+    save_mini_dump(nullptr);
+#endif
+    TerminateProcess(GetCurrentProcess(), 1);
 }
 
 void xrDebug::_initialize(const bool& dedicated)

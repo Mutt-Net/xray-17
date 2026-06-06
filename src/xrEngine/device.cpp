@@ -305,8 +305,10 @@ void mt_FreezeThread(void *ptr) {
 		START_PROFILE("Check timer");
 		if (FreezeTimer.GetElapsed_sec()*1000.f > freezetime)
 		{
-			FlushLog();
-			repeatcheck = 5000.f;
+			string256 msg;
+			xr_sprintf(msg, "Main thread stalled: no frame for %.0f seconds (threshold %.0fs)",
+			           FreezeTimer.GetElapsed_sec(), freezetime / 1000.f);
+			Debug.force_dump_and_exit(msg);
 		}
 		STOP_PROFILE;
 
