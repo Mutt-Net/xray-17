@@ -60,6 +60,8 @@ but they should not be carried into any new security-relevant feature.**
 
 ## Disposition
 
-SEC-01 **audited and documented** (2026-06-06). No code changed — crypto changes are
-compatibility-breaking and runtime-untestable here. The misnomer rename (rec. 1) is the only
-safe immediate follow-up and is left for a focused pass.
+SEC-01 **audited and documented** (2026-06-06). The misnomer rename (rec. 1) applied
+(2026-06-06): `xr_sha256` → `xr_sha1` across `xr_sha.h/.cpp`, `xr_dsa_signer.h/.cpp`,
+`xr_dsa_verifyer.h`, `configs_dump_verifyer.h/.cpp` (8 sites). No behavioural change.
+No code changed for rec. 2/3 — algo migration is compatibility-breaking and requires a
+coordinated re-sign + release plan.

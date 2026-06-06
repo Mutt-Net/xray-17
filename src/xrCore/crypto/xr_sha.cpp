@@ -7,17 +7,17 @@
 namespace crypto
 {
 
-xr_sha256::xr_sha256()
+xr_sha1::xr_sha1()
 {
 	m_sha_ctx		= xr_new<SHA_CTX>();
 }
 
-xr_sha256::~xr_sha256()
+xr_sha1::~xr_sha1()
 {
 	xr_delete		(m_sha_ctx);
 }
 
-void	xr_sha256::start_calculate		(u8 const * data, u32 data_size)
+void	xr_sha1::start_calculate		(u8 const * data, u32 data_size)
 {
 	SHA_Init		(m_sha_ctx);
 	ZeroMemory		(m_result, sizeof(m_result));
@@ -26,7 +26,7 @@ void	xr_sha256::start_calculate		(u8 const * data, u32 data_size)
 	m_data_size		= data_size;
 }
 
-bool	xr_sha256::continue_calculate	()
+bool	xr_sha1::continue_calculate	()
 {
 	u32 const to_calc	= m_data_size >= calc_chunk_size ? calc_chunk_size : m_data_size;
 

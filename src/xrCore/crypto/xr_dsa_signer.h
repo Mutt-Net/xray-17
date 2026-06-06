@@ -27,7 +27,7 @@ private:
 	};
 
 	crypto::xr_dsa m_dsa;
-	crypto::xr_sha256 m_sha;
+	crypto::xr_sha1 m_sha;
 }; //xr_dsa_signer
 
 char const* current_time(string64& dest_time);

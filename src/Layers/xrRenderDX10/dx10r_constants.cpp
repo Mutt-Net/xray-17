@@ -146,44 +146,10 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 			fatal("Pclass D3DXPC_STRUCT unsupported");
 			break;
 		case D3D10_SVC_OBJECT:
-			{
-				VERIFY(!"Implement shader object parsing.");
-				/*
-				switch (T->Type)
-				{
-				case D3DXPT_SAMPLER:
-				case D3DXPT_SAMPLER1D:
-				case D3DXPT_SAMPLER2D:
-				case D3DXPT_SAMPLER3D:
-				case D3DXPT_SAMPLERCUBE:
-				{
-				// ***Register sampler***
-				// We have determined all valuable info, search if constant already created
-				ref_constant	C		=	get	(name);
-				if (!C)	{
-				C					=	xr_new<R_constant>();//.g_constant_allocator.create();
-				C->name				=	name;
-				C->destination		=	RC_dest_sampler;
-				C->type				=	RC_sampler;
-				R_constant_load& L	=	C->samp;
-				L.index				=	u16(r_index	+ ( (destination&1)? 0 : D3DVERTEXTEXTURESAMPLER0 ));
-				L.cls				=	RC_sampler	;
-				table.push_back		(C);
-				} else {
-				R_ASSERT			(C->destination	==	RC_dest_sampler);
-				R_ASSERT			(C->type		==	RC_sampler);
-				R_constant_load& L	=	C->samp;
-				R_ASSERT			(L.index		==	r_index);
-				R_ASSERT			(L.cls			==	RC_sampler);
-				}
-				}
-				break;
-				default:
-				fatal		("Pclass D3DXPC_OBJECT - object isn't of 'sampler' type");
-				break;
-				}
-				*/
-			}
+			// In HLSL SM4+, sampler/texture objects are shader-level resource bindings
+			// reflected via GetResourceBindingDesc (handled in parseResources), not
+			// constant-buffer members. D3D10_SVC_OBJECT cannot appear in a valid DX10/11
+			// cbuffer variable — this branch is unreachable for conforming shaders.
 			bSkip = TRUE;
 			break;
 		default:

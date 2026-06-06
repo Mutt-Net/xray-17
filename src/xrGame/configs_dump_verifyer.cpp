@@ -240,7 +240,7 @@ namespace mp_anticheat
 
 		m_orig_config_body.w_stringZ(add_str);
 
-		crypto::xr_sha256 tmp_sha_checksum;
+		crypto::xr_sha1 tmp_sha_checksum;
 		tmp_sha_checksum.start_calculate(
 			m_orig_config_body.pointer(),
 			m_orig_config_body.tell());
@@ -248,7 +248,7 @@ namespace mp_anticheat
 		{
 		};
 
-		u8 tmp_checksum[crypto::xr_sha256::digest_length];
+		u8 tmp_checksum[crypto::xr_sha1::digest_length];
 		if (!verify_dsign(data, data_size, tmp_checksum))
 		{
 			xr_strcpy(diff, "invalid digital sign");

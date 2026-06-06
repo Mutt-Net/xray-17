@@ -21,7 +21,7 @@ protected:
 	crypto::xr_dsa::public_key_t m_public_key;
 private:
 	crypto::xr_dsa m_dsa;
-	crypto::xr_sha256 m_sha;
+	crypto::xr_sha1 m_sha;
 }; //class xr_dsa_verifyer
 
 

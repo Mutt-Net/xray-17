@@ -8,6 +8,10 @@ RND-01…11 (Track A; 09 deferred `[runtime]`), CODE-01 (project-wide `/W4 /WX`)
 BUILD-01/07/09/12, MEM-01, DOCS-01/02/04/05, SEC-01 (audit), TEST-01/02 mothballed; CODE-02/05/06/08
 dispositioned as incremental/tool-blocked.
 
+**Gaming-PC env now available (2026-06-06). Follow-ups completed this session:**
+RND-09 ✓ (D3D10_SVC_OBJECT unreachable — VERIFY stub + dead DX9 code removed, knowledge comment);
+SEC-01 rename ✓ (`xr_sha256` → `xr_sha1` across xrCore/xrGame — 8 sites, clarity-only).
+
 **What remains is the gated bulk** — needs the owner's gaming-PC environment:
 - `[runtime]` (game + assets + GPU): all PERF, AI, PHYS, ENV, SUBSYS, MOD, NET, most GFX/CFG/
   INPUT/AUDIO, Track C debug-layer audit, the mothballed TEST harness.
