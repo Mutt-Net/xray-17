@@ -2340,6 +2340,39 @@ public:
 	}
 };
 
+// DISP-07: fov_h — set FOV by horizontal angle; converts to vertical FOV stored in g_fov.
+class CCC_FOV_H : public IConsole_Command
+{
+public:
+	CCC_FOV_H(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; }
+
+	virtual void Execute(LPCSTR args)
+	{
+		float hfov = (float)atof(args);
+		if (hfov < 5.0f || hfov > 170.0f)
+		{
+			Msg("! fov_h: value %.1f out of range [5, 170]", hfov);
+			return;
+		}
+		float aspect = Device.fASPECT; // width / height
+		if (aspect < 0.01f) aspect = 4.0f / 3.0f;
+		g_fov = rad2deg(2.0f * atanf(tanf(deg2rad(hfov) * 0.5f) / aspect));
+	}
+
+	virtual void Status(TStatus& status)
+	{
+		float aspect = Device.fASPECT;
+		if (aspect < 0.01f) aspect = 4.0f / 3.0f;
+		float hfov = rad2deg(2.0f * atanf(tanf(deg2rad(g_fov) * 0.5f) * aspect));
+		xr_sprintf(status, "%.2f (vfov=%.2f)", hfov, g_fov);
+	}
+
+	virtual void Info(TInfo& info)
+	{
+		xr_strcpy(info, "set horizontal FOV in degrees [5..170]; converts to vertical FOV");
+	}
+};
+
 void CCC_RegisterCommands()
 {
 	//Not needed for a singleplayer-only mod
@@ -2408,6 +2441,7 @@ void CCC_RegisterCommands()
 	//#ifdef DEBUG
 	CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 0.1f, 1.0f);
 	CMD4(CCC_Float, "fov", &g_fov, 5.0f, 180.0f);
+	CMD1(CCC_FOV_H, "fov_h");
 	CMD4(CCC_Float, "viewport_near", &Device.ViewportNear, 0.0f, 1.0f);
 	//#endif // DEBUG
 

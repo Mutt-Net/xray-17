@@ -47,18 +47,18 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 
 ---
 
-## Sprint s4 — Track A finish + Track C (correctness)  ← IN PROGRESS
+## Sprint s4 — Track A finish + Track C (correctness)
 
 | Ticket | Tag | Note |
 |--------|-----|------|
-| RND-04 | `[code]` | Document/resolve `nullrt` R5G6B5→R8G8B8A8 workaround |
-| RND-05 | `[code]` | Shader-resource HACK (dx10ResourceManager_Resources.cpp:177,289,389) |
-| RND-06 | `[code]` | Remove DX9 state-cache leftovers (dx10StateCache.cpp) |
-| RND-07 | `[code]` | Triangle-fan topology handling |
-| RND-08 | `[code]` | Commented scripting paths (dx10ResourceManager_Scripting.cpp) |
-| RND-09 | `[code]` | Empty/obsolete TODO + `VERIFY(!"Implement shader object parsing")` (dx10r_constants.cpp:150) |
-| RND-10 | `[code]` | Sweep remaining TODO/HACK in render dirs; classify each |
-| RND-11 | `[code]` | R3/R4 parity check note/guard |
+| RND-04 | `[code]` | ✓ **DONE 2026-06-06** — `dx10TextureUtils.cpp:17-20` knowledge comment: nullrt R5G6B5→R8G8B8A8 permanent (B5G6R5_UNORM offers no benefit here). |
+| RND-05 | `[code]` | ✓ **DONE 2026-06-06** — stub-shader fallback explained via knowledge comment; fixed 3× `Msg(tmp)` → `Msg("%s", tmp)` format-string safety in VS/PS/GS paths. |
+| RND-06 | `[code]` | ✓ **DONE 2026-06-06** — Removed dead `FlushStates()` + `ResetDescription×3` DX9-alias blocks from `dx10StateCache.cpp`. |
+| RND-07 | `[code]` | ✓ **DONE 2026-06-06** — `dx10R_Backend_Runtime.h:335-339` knowledge comment already in place: triangle-fan early return is intentional. |
+| RND-08 | `[code]` | ✓ **DONE (prior session via CODE-03)** — knowledge comment with `(RND-08)` in `dx10ResourceManager_Scripting.cpp`. |
+| RND-09 | `[code]` | ✓ **DONE (prior session)** — VERIFY stub cleared; dead DX9 code removed; knowledge comment. |
+| RND-10 | `[code]` | ✓ **DONE 2026-06-06** — Swept all remaining TODO/HACK in xrRenderDX10, R3, R4: 3DFluid instancing/reserve, constant buffer dirty-flag, HW format constraints, DX9 enum note, SMAP/RT/cloud TODOs — all replaced with knowledge comments. |
+| RND-11 | `[code]` | ✓ **DONE 2026-06-06** — All RND-10 R3 changes mirrored to R4. `docs/render-r3-r4-mirror.md` (DOCS-05) documents the mirror rule. |
 | CODE-04 | `[code]` | ✓ **Substantially DONE 2026-06-05** — audited all render crash-stubs (`docs/code-04-crash-stub-audit.md`); no-op'd the debug ones (overdrawBegin/End, dbg_SetRS/SS); render/gameplay stubs (pick_bone, smap tsh, CHW::support, RND-09) left asserting + catalogued for `[runtime]` |
 | CODE-03 | `[code]` | ✓ **Substantially DONE 2026-06-05** — the high-value target (misleading `/* DX10 cut */` blocks that read as unimplemented features) is fully swept from the render layer (RND-01/08) and a tree-wide grep finds no others; remaining dead code is harmless commented `//VERIFY` knowledge comments (catalogued in the CODE-04 audit) + a few intentional `#if 0` reference blocks — left as-is (no maintenance burden, low value to churn). |
 | Track C | `[runtime]` | Debug-layer-clean DX11: the *audit* of warnings needs a running game; code fixes land as found |
@@ -111,7 +111,13 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 
 ## Sprint s8 — Display / input / audio
 
-DISP-01..08 `[hw]`/`[code]` · INPUT-01..04 `[code]`/`[runtime]` · AUDIO-01..04 `[code]`/`[runtime]`
+| Ticket | Tag | Note |
+|--------|-----|------|
+| DISP-07 | `[code]` | ✓ **DONE 2026-06-06** — Added `fov_h` console command (`console_commands.cpp`): accepts HFOV in degrees [5..170], converts to VFOV via `g_fov = 2*atan(tan(HFOV/2)/aspect)` using `Device.fASPECT`; `Status()` reports current HFOV back-computed from `g_fov`. |
+| DISP-08 | `[code]` | ✓ **DONE 2026-06-06** — Audited `dx10HW.cpp`: `{0,0}` for fullscreen resolution is correct (DX11 picks desktop resolution in windowed-fullscreen mode); `selectRefresh()` used for true exclusive fullscreen. Knowledge comment already in place. No code change needed. |
+| DISP-01..06 | `[hw]` | VRR/HDR/multi-mon — gated on display hardware |
+| INPUT-01..04 | `[code]`/`[runtime]` | Input rebinding, gamepad, raw input |
+| AUDIO-01..04 | `[code]`/`[runtime]` | OpenAL, HRTF, reverb, streaming |
 
 ## Sprint s9 — Graphics features
 
@@ -120,8 +126,14 @@ GFX-08/09/10/11/12 `[runtime]` · GFX-07 `[runtime]`
 
 ## Sprint s10 — Platform / localisation / config / distribution
 
-PLAT-01..04 `[runtime]`/`[hw]` · I18N-01..03 `[code]`/`[runtime]` · CFG-01..04 `[code]`/`[runtime]` ·
-DIST-01..04 `[infra]`
+| Ticket | Tag | Note |
+|--------|-----|------|
+| I18N-03 | `[code]` | ✓ **DONE 2026-06-06** — Audited string externalization: `CStringTable::translate()` used at 150+ UI call sites; string table system fully covers game text. Five minor hardcoded-string sites found (two MP-only, two locale-neutral `"---"` symbols, one `"--- RU"` currency placeholder). See `docs/i18n-string-audit.md`. No systemic gaps. |
+| CFG-03 | `[code]` | ✓ **DONE 2026-06-06** — Audited dev console: all three requested features already implemented. History: 64-command buffer with Ctrl+Up/Down navigation. Autocomplete: tab-completion tip system (220-tip capacity, highlight, Tab/Shift+Tab). Cvar help: `help` command lists all commands with `Status()` + `Info()` text; typing a command with no args shows current value. Documented in `help` command key listing. |
+| PLAT-01..04 | `[runtime]`/`[hw]` | Steam Deck, ARM, platform-specific |
+| I18N-01..02 | `[runtime]` | UTF-8 pipeline, font atlas — need game assets |
+| CFG-01..02, CFG-04 | `[runtime]`/`[code]` | Options UI, GPU presets, config migration |
+| DIST-01..04 | `[infra]` | Distribution, updates |
 
 ## Backlog tail — strategic / XL (scheduled "later", explicitly long-horizon)
 

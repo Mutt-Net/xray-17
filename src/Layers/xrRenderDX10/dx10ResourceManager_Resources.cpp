@@ -173,12 +173,14 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
 		//		LPCSTR						target		= NULL;
 
 		// duplicate and zero-terminate
+		//	RND-05: stub_default fallback is intentional — a missing VS gets a pass-through
+		//	stub so the game can keep running. Warnings here help track un-ported shaders.
 		IReader* file = FS.r_open(cname);
 			if (!file)
 		{
 			string1024 tmp;
 			xr_sprintf(tmp, "DX10: %s is missing. Replace with stub_default.vs", cname);
-			Msg(tmp);
+			Msg("%s", tmp);
 			strconcat(sizeof(cname), cname, ::Render->getShaderPath(), "stub_default", ".vs");
 			FS.update_path(cname, "$game_shaders$", cname);
 			file = FS.r_open(cname);
@@ -289,7 +291,7 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
 		{
 			string1024 tmp;
 			xr_sprintf(tmp, "DX10: %s is missing. Replace with stub_default.ps", cname);
-			Msg(tmp);
+			Msg("%s", tmp);
 			strconcat(sizeof(cname), cname, ::Render->getShaderPath(), "stub_default", ".ps");
 			FS.update_path(cname, "$game_shaders$", cname);
 			file = FS.r_open(cname);
@@ -386,7 +388,7 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
 		{
 			string1024 tmp;
 			xr_sprintf(tmp, "DX10: %s is missing. Replace with stub_default.gs", cname);
-			Msg(tmp);
+			Msg("%s", tmp);
 			strconcat(sizeof(cname), cname, ::Render->getShaderPath(), "stub_default", ".gs");
 			FS.update_path(cname, "$game_shaders$", cname);
 			file = FS.r_open(cname);

@@ -293,8 +293,10 @@ void CHW::CreateDevice(HWND hwnd, bool move_window)
     D3DFORMAT& fTarget = Caps.fTarget;
 	D3DFORMAT& fDepth = Caps.fDepth;
 
-    //	HACK: DX10: Embed hard target format.
-    fTarget = D3DFMT_X8R8G8B8; //	No match in DX10. D3DFMT_A8B8G8R8->DXGI_FORMAT_R8G8B8A8_UNORM
+    //	DX10 has no CheckDeviceType equivalent; target format is fixed to D3DFMT_X8R8G8B8 which
+    //	maps to DXGI_FORMAT_R8G8B8A8_UNORM via dx10TextureUtils. Format selection code retained
+    //	below in the commented block for reference.
+    fTarget = D3DFMT_X8R8G8B8;
 	fDepth = selectDepthStencil(fTarget);
     /*
     if (bWindowed)
@@ -1372,7 +1374,8 @@ void CHW::UpdateViews()
     R_CHK(R);
 
     //	Create Depth/stencil buffer
-    //	HACK: DX10: hard depth buffer format
+    //	DX10/11 depth format is fixed (DXGI_FORMAT_D24_UNORM_S8_UINT); DX9 GetDepthStencilSurface
+    //	has no equivalent. The commented call below is the DX9 reference.
 	//R_CHK	(pDevice->GetDepthStencilSurface	(&pBaseZB));
 	ID3DTexture2D* pDepthStencil = NULL;
 

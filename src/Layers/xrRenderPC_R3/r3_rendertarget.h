@@ -139,7 +139,8 @@ public:
 	ref_rt rt_smap_surf; // 32bit,		color
 	ref_rt rt_smap_depth; // 24(32) bit,	depth
 	ref_rt rt_smap_depth_minmax; //	is used for min/max sm
-	//	TODO: DX10: CHeck if we need old-style SMAP
+	//	DX10 always uses HW shadow maps (texture-based depth); the DX9 IDirect3DSurface9
+	//	rt_smap_ZB is not needed. HW_smap is asserted in phase_smap_direct/spot.
 	//	IDirect3DSurface9*			rt_smap_ZB;		//
 
 	//	Igor: for async screenshots

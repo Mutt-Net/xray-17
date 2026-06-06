@@ -46,8 +46,7 @@ private:
 
 	dx103DFluidGrid* m_pGrid;
 
-	//	Cache vectors to avoid memory reallocations
-	//	TODO: DX10: Reserve memory on object creation
+	//	Per-frame scratch vectors; clear_not_free() avoids reallocations after the first frame.
 	xr_vector<ISpatial*> m_lstRenderables;
 	xr_vector<const IPhysicsShell*> m_lstShells;
 	xr_vector<const IPhysicsElement*> m_lstElements;

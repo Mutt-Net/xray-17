@@ -13,7 +13,8 @@ void CRenderTarget::phase_smap_spot_clear()
 void CRenderTarget::phase_smap_spot(light* L)
 {
 	// Targets + viewport
-	//	TODO: DX10: CHeck if we don't need old-style SMAP
+	//	DX10 always uses HW shadow maps; rt_smap_ZB (DX9 surface) is not present. The VERIFY
+	//	below enforces this invariant — HW_smap must be true on DX10/11.
 	if (RImplementation.o.HW_smap) u_setrt(rt_smap_surf, NULL, NULL, rt_smap_depth->pZRT);
 		//else								u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_ZB);
 	else

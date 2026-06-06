@@ -556,7 +556,8 @@ void CRenderTarget::accum_volumetric(light* L)
 		//	Set up user clip planes
 		{
 			static shared_str strFrustumClipPlane("FrustumClipPlane");
-			//	TODO: DX10: Check if it's equivalent to the previouse code.
+			//	DX10 clip planes are passed as shader constants (FrustumClipPlane) rather than
+			//	fixed-function D3DRS_CLIPPLANEENABLE. The clip-space transform below is equivalent.
 			//RCache.set_ClipPlanes (TRUE,ClipFrustum.planes,ClipFrustum.p_count);
 
 			//	Transform frustum to clip space

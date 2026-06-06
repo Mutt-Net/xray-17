@@ -108,8 +108,7 @@ private:
 	ref_geom m_GeomQuadVertex;
 	ID3DVertexBuffer* m_pQuadVertexBuffer;
 
-	//	Cache vectors to avoid memory reallocations
-	//	TODO: DX10: Reserve memory on object creation
+	//	Per-frame scratch vector; clear_not_free() avoids reallocations after the first frame.
 	xr_vector<ISpatial*> m_lstRenderables;
 };
 

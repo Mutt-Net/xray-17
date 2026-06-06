@@ -263,7 +263,8 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
 	}
 }
 
-//	TODO: DX10: Do it using instancing.
+//	RenderPhysicsShell iterates each element individually. Instancing would reduce
+//	draw-call count if many obstacle elements exist simultaneously. Profile first (PERF-01).
 void dx103DFluidObstacles::RenderPhysicsShell(const IPhysicsShell* pShell, const Fmatrix& WorldToFluid, float timestep)
 {
 	u16 iObstNum = pShell->get_ElementsNumber();

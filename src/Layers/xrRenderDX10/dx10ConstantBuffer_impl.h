@@ -4,7 +4,8 @@
 
 IC Fvector4* dx10ConstantBuffer::Access(u16 offset)
 {
-	//	TODO: DX10: Implement code which will check if set actually changes code.
+	//	m_bChanged is always set to true; a dirty-value check (skip upload if unchanged) would
+	//	reduce GPU constant-buffer updates. Profile against PERF-01 before implementing.
 	m_bChanged = true;
 
 	//	Check buffer size in client code: don't know if actual data will cross

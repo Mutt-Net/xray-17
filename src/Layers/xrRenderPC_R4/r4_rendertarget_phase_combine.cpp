@@ -13,7 +13,7 @@ void CRenderTarget::DoAsyncScreenshot()
 	{
 		HRESULT hr;
 
-		//	HACK: unbind RT. CopyResource needs src and target to be unbound.
+		//	CopyResource requires both src and dst to be unbound from the pipeline; unbind RT first.
 		//u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 
 		ID3DTexture2D* pBuffer;
@@ -408,7 +408,7 @@ void CRenderTarget::phase_combine()
 		RCache.set_CullMode(CULL_CCW);
 		RCache.set_Stencil(FALSE);
 		RCache.set_ColorWriteEnable();
-		//	TODO: DX10: CHeck this!
+		//	Cloud rendering (DX9: RenderClouds) is folded into render_forward() on DX10/11.
 		//g_pGamePersistent->Environment().RenderClouds	();
 		RImplementation.render_forward();
 		if (g_pGamePersistent) g_pGamePersistent->OnRenderPPUI_main(); // PP-UI

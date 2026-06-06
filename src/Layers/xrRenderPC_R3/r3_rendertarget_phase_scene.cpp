@@ -5,7 +5,6 @@ void CRenderTarget::phase_scene_prepare()
 {
 	PIX_EVENT(phase_scene_prepare);
 
-		//	TODO: DX10: Check if we need to set RT here.
 		if (!RImplementation.o.dx10_msaa)
 			u_setrt(Device.dwWidth, Device.dwHeight, rt_Position->pRT,NULL,NULL, HW.pBaseZB);
 		else

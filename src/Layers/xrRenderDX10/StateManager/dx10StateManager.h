@@ -32,7 +32,8 @@ public:
 	//	These functions accept only DX9 style constants
 	//	Don't use these directly. Only via RCache to allow it
 	//	to route calls to DX9
-	//	TODO: replace u32 with appropriate DX9 enums to avoid confusion
+	//	Parameters use u32 (not D3DCMPFUNC/D3DSTENCILOP etc.) because callers pass raw DX9
+	//	enum values; changing to typed enums would require updating all call sites.
 	void SetStencil(u32 Enable, u32 Func, u32 Ref, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail);
 	void SetDepthFunc(u32 Func);
 	void SetDepthEnable(u32 Enable);

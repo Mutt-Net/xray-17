@@ -9,7 +9,7 @@ void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 
 
 	//	Don't have rect clear for DX10
-	//	TODO: DX9:	Full clear must be faster for the near phase for SLI
+	//	DX10 has no partial-clear API (D3DRECT); full ClearDepthStencilView is used instead.
 	//	inobody clears this buffer _this_ frame.
 	// Clear
 	//if (SE_SUN_NEAR==sub_phase)			{

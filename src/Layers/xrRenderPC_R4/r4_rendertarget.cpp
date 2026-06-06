@@ -560,7 +560,8 @@ CRenderTarget::CRenderTarget()
 			rt_ui_pda.create(r2_RT_ui, w, h, D3DFMT_A8R8G8B8);
 		}
 
-		// TODO: R11G11B10F? needs another horrible hack + cast + update to converter function
+		//	R11G11B10F would halve VRAM for HDR half-res buffers (no alpha needed), but requires
+		//	updating the dx10TextureUtils format table and shader reads. Low priority; profile first.
 		if (RImplementation.o.dx11_hdr10) {
 			rt_HDR10_HalfRes[0].create(r4_RT_HDR10_halfres0, w/2,  h/2,  D3DFMT_A16B16G16R16F);
 			rt_HDR10_HalfRes[1].create(r4_RT_HDR10_halfres1, w/2,  h/2,  D3DFMT_A16B16G16R16F);

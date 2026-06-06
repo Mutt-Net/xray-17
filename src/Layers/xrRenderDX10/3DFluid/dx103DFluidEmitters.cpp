@@ -123,7 +123,6 @@ void dx103DFluidEmitters::ApplyDensity(const CEmitter& Emitter)
 	m_pGrid->DrawSlices();
 }
 
-//	TODO: DX10: Remove this hack
 static float lilrand()
 {
 	return (rand() / float(RAND_MAX) - 0.5f) * 5.0f;
