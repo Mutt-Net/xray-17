@@ -291,14 +291,16 @@ void mt_FreezeThread(void *ptr) {
 	float freezetime = 0.f;
 	float repeatcheck = 500.f;
 
+	Sleep(5000);  // grace period: let the main loop start before first check
+
 	while (true)
 	{
 		PROF_EVENT();
 
 		if (g_loading_events.size())
-			freezetime = 25000.0f;
+			freezetime = 120000.0f;  // 2 min during explicit level load
 		else
-			freezetime = 5000.0f;
+			freezetime = 60000.0f;   // 60s between frames (covers heavy mod texture uploads)
 
 		repeatcheck = 500.f;
 
@@ -578,6 +580,7 @@ void CRenderDevice::Run()
 	// InitializeCriticalSection (&mt_csLeave);
 	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
+	FreezeTimer.Start();  // initialise before watchdog thread reads it
 	thread_spawn(mt_FreezeThread, "Freeze detecting thread", 0, 0);
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, this);
 	thread_spawn(mt_DiscordThread, "X-RAY Discord thread", 0, 0);
