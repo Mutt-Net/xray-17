@@ -232,8 +232,9 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 			//			CopyMemory			(pData,fs().pointer(),vCount*vSize);
 			//fs->r				(pData,vCount*vSize);
 			//_VB[i]->Unlock		();
-			//	TODO: DX10: Check fragmentation.
-			//	Check if buffer is less then 2048 kb
+			//	Fragmentation: buffer sizes are logged above. If many buffers are consistently
+			//	< 2048 KB during a profiling pass (PERF-01), consider sub-allocating from a
+			//	pooled heap or merging buffers to reduce VRAM fragmentation.
 			BYTE* pData = xr_alloc<BYTE>(vCount * vSize);
 			fs->r(pData, vCount * vSize);
 			dx10BufferUtils::CreateVertexBuffer(&_VB[i], pData, vCount * vSize);
@@ -262,8 +263,9 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 			//fs->r				(pData,iCount*2);
 			//_IB[i]->Unlock		();
 
-			//	TODO: DX10: Check fragmentation.
-			//	Check if buffer is less then 2048 kb
+			//	Fragmentation: buffer sizes are logged above. If many buffers are consistently
+			//	< 2048 KB during a profiling pass (PERF-01), consider sub-allocating from a
+			//	pooled heap or merging buffers to reduce VRAM fragmentation.
 			BYTE* pData = xr_alloc<BYTE>(iCount * 2);
 			fs->r(pData, iCount * 2);
 			dx10BufferUtils::CreateIndexBuffer(&_IB[i], pData, iCount * 2);

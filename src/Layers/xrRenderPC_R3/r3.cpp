@@ -993,8 +993,10 @@ static HRESULT create_shader(
 		//	Store input signature blob
 		if (SUCCEEDED(_result) && pReflection)
 		{
-			//	DX10: input signatures could be shared across VS variants to reduce
-			//	InputLayout creation overhead. Valid optimisation; not a correctness issue.
+			//	Input signatures ARE shared: _CreateInputSignature (dx10ResourceManager_Resources.cpp)
+			//	deduplicates by blob-content memcmp and returns a cached SInputSignature*. The D3D
+			//	runtime then reuses an existing InputLayout whenever the same signature pointer is used,
+			//	avoiding redundant ID3D11Device::CreateInputLayout calls across VS variants.
 
 			//	Store input signature (need only for VS)
 			//CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );

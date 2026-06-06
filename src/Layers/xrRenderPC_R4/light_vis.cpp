@@ -52,9 +52,11 @@ void light::vis_prepare()
 	xform_calc();
 	RCache.set_xform_world(m_xform);
 	vis.query_order = RImplementation.occq_begin(vis.query_id);
-	//	Hack: Igor. Light is visible if it's frutum is visible. (Only for volumetric)
-	//	Hope it won't slow down too much since there's not too much volumetric lights
-	//	Sorting volumetric lights for performance is a valid P3 optimisation.
+	//	Volumetric SPOT lights use frustum visibility as a proxy for light visibility.
+	//	Sorting: to reduce overdraw/state changes, sort volumetric lights front-to-back
+	//	or by stencil group before accumulation. The sort should be done in the
+	//	r4_rendertarget_accum_point collection loop, not here per-light. Requires a
+	//	runtime profiling pass (PERF-01) to confirm this is a bottleneck first.
 	if ((flags.type == IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric)
 		RCache.set_Stencil(FALSE);
 	else

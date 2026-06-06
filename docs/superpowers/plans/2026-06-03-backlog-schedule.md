@@ -88,12 +88,12 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 
 | Ticket | Tag | Note |
 |--------|-----|------|
-| CRASH-01 | `[code]` | Modern crash handler + minidumps |
-| CRASH-04 | `[code]` | Friendly in-game error reporting |
-| CRASH-05 | `[code]` | Hang watchdog |
+| CRASH-01 | `[code]` | ✓ **DONE 2026-06-06** — fix `strchr`→`strrchr` in `save_mini_dump`; improve dump flags (`WithDataSegs|WithIndirectlyReferencedMemory|WithFullMemoryInfo|WithThreadInfo`); log dump path; support null pExceptionInfo for non-exception dumps. |
+| CRASH-04 | `[code]` | ✓ **DONE 2026-06-06** — `backend()` (NO_BUG_TRAP) appends clipboard confirmation and log file path to the fatal-error MessageBox. |
+| CRASH-05 | `[code]` | ✓ **DONE 2026-06-06** — `mt_FreezeThread` upgraded to active hang watchdog: calls `Debug.force_dump_and_exit()` on stall (5s / 25s during load); `force_dump_and_exit` added to `xrDebug`. |
 | CRASH-02 | `[infra]` | Symbol server for release PDBs |
 | CRASH-03 | `[infra]` | Opt-in crash telemetry |
-| DOCS-01..05 | `[code]` | ✓ **DOCS-01** (`docs/architecture.md`), ✓ **DOCS-02** (`docs/building.md`), ✓ **DOCS-04** (`docs/modding-api.md`), ✓ **DOCS-05** (`docs/render-r3-r4-mirror.md`) — 2026-06-03/05. Remaining: DOCS-03 (per-subsystem READMEs). |
+| DOCS-01..05 | `[code]` | ✓ **DOCS-01** (`docs/architecture.md`), ✓ **DOCS-02** (`docs/building.md`), ✓ **DOCS-03** (per-subsystem READMEs for xrCore/xrEngine/xrGame/Layers — 2026-06-06), ✓ **DOCS-04** (`docs/modding-api.md`), ✓ **DOCS-05** (`docs/render-r3-r4-mirror.md`) — all done. |
 | SEC-01 | `[code]` | ✓ **DONE 2026-06-06** — audited `src/xrCore/crypto/` (`docs/security-crypto-audit.md`). Findings: DSA-1024 + SHA-1 (both legacy); `xr_sha256` is a misnomer — it's actually SHA-1. Low immediate risk in the baked-in-key verify model; no code changed (algo swaps break signature compatibility + are runtime-untestable). Safe follow-up: rename `xr_sha256`→`xr_sha1`. |
 | SEC-02..04 | `[code]`/`[runtime]` | Harden asset/config parsing, save integrity, net protocol |
 
@@ -102,8 +102,9 @@ A ticket can carry several tags. `[code]` tickets are the ones I can actually fi
 | Ticket | Tag | Note |
 |--------|-----|------|
 | PERF-01 | `[runtime]` | Profiling pass — measure before optimising |
-| PERF-02 | `[code]` | Share input signatures |
-| PERF-03/04 | `[code]` | Geometry-buffer fragmentation audit; volumetric light sorting |
+| PERF-02 | `[code]` | ✓ **DONE 2026-06-06** — audited: `_CreateInputSignature` already deduplicates by blob-content memcmp; stale "could be shared" TODO replaced with accurate knowledge comment in r3.cpp / r4.cpp. |
+| PERF-03 | `[code]` | ✓ **DONE 2026-06-06** — audited: VB + IB sizes already logged at load. Stale TODO comments (`r3/r4_loader.cpp` ×2 each) replaced with fragmentation investigation guidance referencing PERF-01. |
+| PERF-04 | `[code]` | ✓ **DONE 2026-06-06** — stale TODO in `r3/r4 light_vis.cpp` replaced with knowledge comment: sort location (accumulation loop, not per-light), sort strategy (front-to-back / stencil group), and PERF-01 prerequisite. |
 | PERF-08..14 | `[runtime]`/`[code]` | AVX benchmark, PSO cache, sync-point audit, pacing, streaming, async load |
 | PERF-05 | `[XL]` | Multithreaded render submission |
 | PERF-06/07 | `[code]`/`[runtime]` | Batching/instancing; GPU occlusion culling |
