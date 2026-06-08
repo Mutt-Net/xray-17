@@ -9,18 +9,21 @@ void CGammaControl::Update()
 {
 	if (HW.pDevice)
 	{
+		// GetContainingOutput returns DXGI_ERROR_UNSUPPORTED in windowed/borderless
+		// mode — the swap chain does not own an exclusive output. Bail silently.
+		IDXGIOutput* pOutput = nullptr;
+		if (FAILED(HW.m_pSwapChain->GetContainingOutput(&pOutput)) || !pOutput)
+			return;
+
 		DXGI_GAMMA_CONTROL_CAPABILITIES GC;
 		DXGI_GAMMA_CONTROL G;
-		IDXGIOutput* pOutput;
-
-		CHK_DX(HW.m_pSwapChain->GetContainingOutput(&pOutput));
 		HRESULT hr = pOutput->GetGammaControlCapabilities(&GC);
 		if (SUCCEEDED(hr))
 		{
 			GenLUT(GC, G);
 			pOutput->SetGammaControl(&G);
 		}
-		_RELEASE(pOutput);					
+		_RELEASE(pOutput);
 	}
 }
 
