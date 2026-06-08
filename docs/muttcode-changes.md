@@ -528,6 +528,27 @@ Set `rs_screenmode borderless` in `appdata/user.ltx`. Borderless mode uses a dif
 present path that is less sensitive to the multi-GPU confusion. Fullscreen exclusive is broken
 until the engine is rebuilt with the fix.
 
+### S3-6: `CGammaControl::Update` hard crash in windowed/borderless mode (playtest find)
+
+**Files:** `src/Layers/xrRender/xr_effgamma.cpp`
+
+**Symptom:** Launching in borderless windowed mode causes a hard freeze on the taupe loading
+screen requiring a reboot. Crash trace: `CGammaControl::Update` → `dxRenderDeviceRender::
+OnDeviceCreate` → unhandled exception handler.
+
+**Root cause:** `GetContainingOutput` on a DXGI swap chain returns `DXGI_ERROR_UNSUPPORTED`
+when the window is not in exclusive fullscreen — the swap chain does not own a specific output
+in windowed/borderless mode. The call was wrapped in `CHK_DX`, which asserts on any failure
+HRESULT. The resulting unhandled exception fired during device creation, producing a GPU hang
+that Windows could not recover from without a reboot.
+
+**Fix:** Replace `CHK_DX(...)` with a guarded check and early return:
+```cpp
+IDXGIOutput* pOutput = nullptr;
+if (FAILED(HW.m_pSwapChain->GetContainingOutput(&pOutput)) || !pOutput)
+    return; // Windowed/borderless — no exclusive output, skip gamma ramp
+```
+
 ---
 
 ## Render TODO Triage Reference
