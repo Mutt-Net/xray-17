@@ -713,12 +713,25 @@ void CRender::RenderToTarget(RRT target)
 	}
 
 	ID3DTexture2D* pBuffer = nullptr;
+#if defined(USE_DX12)
+	// On the DX12 backend the swapchain buffers are ID3D12Resources — GetBuffer
+	// returns E_NOINTERFACE for ID3D11Texture2D (observed: black 3D PDA screen).
+	// R4 renders the frame into the offline colour buffer instead; copy from it.
+	pBuffer = HW.m_pOfflineRT12;
+	if (!pBuffer)
+	{
+		Msg("! CRender::RenderToTarget(%i): offline RT unavailable, copy skipped", target);
+		return;
+	}
+	pBuffer->AddRef(); // balanced by the Release below, same as the GetBuffer path
+#else
 	HRESULT hr = HW.m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBuffer);
 	if (FAILED(hr) || !pBuffer)
 	{
 		Msg("! CRender::RenderToTarget(%i): GetBuffer failed (hr=0x%08X), copy skipped", target, hr);
 		return;
 	}
+#endif
 
 	// CopyResource requires identical dimensions, format and sample count on
 	// both resources; a mismatch is undefined behaviour (observed as a CTD
