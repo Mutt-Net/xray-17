@@ -2341,10 +2341,18 @@ public:
 };
 
 // DISP-07: fov_h — set FOV by horizontal angle; converts to vertical FOV stored in g_fov.
+// NOTE: Device.fASPECT is height/width in this engine (e.g. 0.5625 at 16:9), not width/height.
 class CCC_FOV_H : public IConsole_Command
 {
 public:
 	CCC_FOV_H(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; }
+
+	static float aspect_h_over_w()
+	{
+		float aspect = Device.fASPECT;
+		if (aspect < 0.01f) aspect = 3.0f / 4.0f;
+		return aspect;
+	}
 
 	virtual void Execute(LPCSTR args)
 	{
@@ -2354,18 +2362,19 @@ public:
 			Msg("! fov_h: value %.1f out of range [5, 170]", hfov);
 			return;
 		}
-		float aspect = Device.fASPECT; // width / height
-		if (aspect < 0.01f) aspect = 4.0f / 3.0f;
-		g_fov = rad2deg(2.0f * atanf(tanf(deg2rad(hfov) * 0.5f) / aspect));
+		g_fov = rad2deg(2.0f * atanf(tanf(deg2rad(hfov) * 0.5f) * aspect_h_over_w()));
 	}
 
 	virtual void Status(TStatus& status)
 	{
-		float aspect = Device.fASPECT;
-		if (aspect < 0.01f) aspect = 4.0f / 3.0f;
-		float hfov = rad2deg(2.0f * atanf(tanf(deg2rad(g_fov) * 0.5f) * aspect));
+		float hfov = rad2deg(2.0f * atanf(tanf(deg2rad(g_fov) * 0.5f) / aspect_h_over_w()));
 		xr_sprintf(status, "%.2f (vfov=%.2f)", hfov, g_fov);
 	}
+
+	// Never persisted: fov_h is a derived setter over g_fov and `fov` is the canonical
+	// saved value. Saving both re-executed fov_h at config-load time, before the device
+	// aspect exists, clobbering fov with a 4:3 misconversion (the "FOV resets on load" bug).
+	virtual void Save(IWriter*) {}
 
 	virtual void Info(TInfo& info)
 	{
