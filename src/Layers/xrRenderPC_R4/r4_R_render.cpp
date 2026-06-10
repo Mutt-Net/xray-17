@@ -706,8 +706,50 @@ void CRender::RenderToTarget(RRT target)
 		break;
 	}
 
+	if (!RT || !(*RT) || !(*RT)->pSurface)
+	{
+		Msg("! CRender::RenderToTarget(%i): render target unavailable, copy skipped", target);
+		return;
+	}
+
 	ID3DTexture2D* pBuffer = nullptr;
-	HW.m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBuffer);
-	HW.pContext->CopyResource((*RT)->pSurface, pBuffer);
+	HRESULT hr = HW.m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBuffer);
+	if (FAILED(hr) || !pBuffer)
+	{
+		Msg("! CRender::RenderToTarget(%i): GetBuffer failed (hr=0x%08X), copy skipped", target, hr);
+		return;
+	}
+
+	// CopyResource requires identical dimensions, format and sample count on
+	// both resources; a mismatch is undefined behaviour (observed as a CTD
+	// when opening the 3D PDA). Validate and report instead of crashing.
+	D3D_TEXTURE2D_DESC bbDesc, rtDesc;
+	pBuffer->GetDesc(&bbDesc);
+	(*RT)->pSurface->GetDesc(&rtDesc);
+
+	const bool compatible =
+		bbDesc.Width == rtDesc.Width &&
+		bbDesc.Height == rtDesc.Height &&
+		bbDesc.Format == rtDesc.Format &&
+		bbDesc.SampleDesc.Count == rtDesc.SampleDesc.Count;
+
+	if (compatible)
+	{
+		HW.pContext->CopyResource((*RT)->pSurface, pBuffer);
+	}
+	else
+	{
+		static bool reported[2] = {};
+		u32 slot = (target == rtPDA) ? 0 : 1;
+		if (!reported[slot])
+		{
+			reported[slot] = true;
+			Msg("! CRender::RenderToTarget(%i): backbuffer %ux%u fmt=%u samples=%u vs target %ux%u fmt=%u samples=%u - copy skipped",
+				target,
+				bbDesc.Width, bbDesc.Height, (u32)bbDesc.Format, bbDesc.SampleDesc.Count,
+				rtDesc.Width, rtDesc.Height, (u32)rtDesc.Format, rtDesc.SampleDesc.Count);
+		}
+	}
+
 	pBuffer->Release();
 }
