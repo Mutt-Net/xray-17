@@ -43,6 +43,7 @@ find_library(LIBRARY_D3D10 d3d10 HINTS ${XRAY_SDK_LIB})
 find_library(LIBRARY_D3DX10 d3dx10 HINTS ${XRAY_SDK_LIB})
 find_library(LIBRARY_D3D11 d3d11 HINTS ${XRAY_SDK_LIB})
 find_library(LIBRARY_D3DX11 d3dx11 HINTS ${XRAY_SDK_LIB})
+find_library(LIBRARY_D3D12 d3d12 HINTS ${XRAY_SDK_LIB})
 
 target_link_libraries(dxsdk
   INTERFACE
@@ -52,4 +53,5 @@ target_link_libraries(dxsdk
   ${LIBRARY_D3DX10}
   ${LIBRARY_D3D11}
   ${LIBRARY_D3DX11}
+  ${LIBRARY_D3D12}
 )

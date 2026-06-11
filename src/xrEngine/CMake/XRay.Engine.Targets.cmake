@@ -4,12 +4,7 @@ include_guard()
 function(add_engine_target NAME)
   add_executable(${NAME} WIN32)
 
-  if(${XRAY_AVX})
-    set(${NAME}_NAME_EXECUTABLE ${NAME}.AVX)
-  else()
-    set(${NAME}_NAME_EXECUTABLE ${NAME})
-  endif()
-
+  set(${NAME}_NAME_EXECUTABLE "${NAME}${XRAY_AVX_SUFFIX}")
   string(REPLACE "." "" ${NAME}_NAME_OUTPUT ${${NAME}_NAME_EXECUTABLE})
   set_target_properties(${NAME}
     PROPERTIES OUTPUT_NAME
@@ -52,6 +47,17 @@ add_engine_target(
   Anomaly.DX11
   XRay.Render.R4
 )
+add_engine_target(
+  Anomaly.DX12
+  XRay.Render.R5
+)
+
+if(Vulkan_FOUND)
+  add_engine_target(
+    Anomaly.Vulkan
+    XRay.Render.R5VK
+  )
+endif()
 
 # Set visual studio startup project
 set_property(

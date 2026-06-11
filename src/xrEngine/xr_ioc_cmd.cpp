@@ -739,6 +739,12 @@ public:
 		r2_advanced_pp = strcmp("renderer_r2.5", renderer_name) == 0;
 		r2_advanced_pp |= strcmp("renderer_r3", renderer_name) == 0;
 		r2_advanced_pp |= strcmp("renderer_r4", renderer_name) == 0;
+		// R5 (DX12) and R5VK (Vulkan) run the R4 pipeline on a newer backend, so they are
+		// r4-class for advanced post-processing. Without this, advancedpp stays false and the
+		// advancedpp-gated render targets (rt_Generic_2, etc.) are never created — the SSFX
+		// volumetric blur phase then dereferences a null rt_Generic_2 and crashes on first frame.
+		r2_advanced_pp |= strcmp("renderer_r5", renderer_name) == 0;
+		r2_advanced_pp |= strcmp("renderer_r5vk", renderer_name) == 0;
 	}
 
 	virtual void Status(TStatus& S)

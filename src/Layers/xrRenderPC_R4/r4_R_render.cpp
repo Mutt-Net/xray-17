@@ -7,6 +7,8 @@
 
 #include <QueryHelper.h>
 
+#include "../xrRender/dxProfiler.h"
+
 IC bool pred_sp_sort(ISpatial* _1, ISpatial* _2)
 {
 	float d1 = _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
@@ -379,6 +381,7 @@ void CRender::Render()
 	if (!split_the_scene_to_minimize_wait)
 	{
 		PIX_EVENT(DEFER_PART0_NO_SPLIT);
+		GPU_ZONE("Geometry");
 		// level, DO NOT SPLIT
 		Target->phase_scene_begin();
 		r_dsgraph_render_hud();
@@ -391,6 +394,7 @@ void CRender::Render()
 	else
 	{
 		PIX_EVENT(DEFER_PART0_SPLIT);
+		GPU_ZONE("Geometry");
 		// level, SPLIT
 		Target->phase_scene_begin();
 		r_dsgraph_render_graph(0);
@@ -544,6 +548,7 @@ void CRender::Render()
 
 		if (RImplementation.o.ssfx_sss && !Device.m_SecondViewport.IsSVPFrame())
 		{
+			GPU_ZONE("SSS");
 			static bool sss_rendered, sss_extended_rendered;
 
 			// SSS Shadows
@@ -584,6 +589,7 @@ void CRender::Render()
 	if (bSUN) //bSUN && Device.dwFrame & 1 --Delayed sun update. Worth to check it in future
 	{
 		PIX_EVENT(DEFER_SUN);
+		GPU_ZONE("Sun");
 		RImplementation.stats.l_visible ++;
 		if (!ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
 			render_sun_cascades();
@@ -627,6 +633,7 @@ void CRender::Render()
 	// Lighting, non dependant on OCCQ
 	{
 		PIX_EVENT(DEFER_LIGHT_NO_OCCQ);
+		GPU_ZONE("Lights");
 		Target->phase_accumulator();
 		HOM.Disable();
 		render_lights(LP_normal);
@@ -639,6 +646,7 @@ void CRender::Render()
 	}
 
 	{
+		GPU_ZONE("Volumetric");
 		if (RImplementation.o.ssfx_volumetric)
 			Target->phase_ssfx_volumetric_blur();
 	}
@@ -646,6 +654,7 @@ void CRender::Render()
 	// Postprocess
 	{
 		PIX_EVENT(DEFER_LIGHT_COMBINE);
+		GPU_ZONE("Combine");
 		Target->phase_combine();
 	}
 

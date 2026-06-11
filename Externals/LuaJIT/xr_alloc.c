@@ -35,25 +35,54 @@ static char buf[100];
 void dump_map(void* ptr, size_t size, char c);
 #endif
 
+size_t g_xr_heap_reserved = 0; /* actual low-2GB bytes reserved (diagnostics) */
+
 void XR_INIT()
 {
 	if (inited)
 		return;
-	g_heap = NULL;
-	size_t size = CHUNK_SIZE * CHUNK_COUNT;
-	long st = ntavm(INVALID_HANDLE_VALUE, &g_heap, NTAVM_ZEROBITS, &size,
-	                MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
-
-	for (int i = 0; i < CHUNK_COUNT; i++)
-		g_heapMap[i] = 'x';
-	g_heapMap[CHUNK_COUNT] = 0;
-	g_firstFreeChunk = g_heapMap;
-
-#ifdef DEBUG_MEM	
-	sprintf(buf, "XR_INIT create_block %p result=%X\r\n", g_heap, st);
-	OutputDebugString(buf);
-#endif
 	inited = 1;
+
+	/* ntavm is normally set by INIT_MMAP() before this runs; be self-sufficient in case
+	   XR_INIT() is ever called earlier. */
+	if (!ntavm)
+		ntavm = (PNTAVM)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtAllocateVirtualMemory");
+
+	/* Reserve the LuaJIT heap in the low 2GB (GC32 needs 32-bit-addressable memory).
+	   The original code requested a fixed 256MB and ignored the status — if that
+	   contiguous low-2GB block is unavailable (e.g. the Vulkan ICD has reserved/fragmented
+	   the low address space in the VK build), NtAllocateVirtualMemory fails, g_heap stays
+	   NULL, and XR_MMAP hands LuaJIT a NULL-based pointer -> crash on first use.
+	   Fall back to the largest block we can actually get so the engine still boots. */
+	g_heap = NULL;
+	size_t got = 0;
+	long st = -1;
+	for (size_t want = (size_t)CHUNK_SIZE * CHUNK_COUNT; want >= (size_t)CHUNK_SIZE * 512; want /= 2)
+	{
+		void* base = NULL;
+		size_t size = want;
+		st = ntavm(INVALID_HANDLE_VALUE, &base, NTAVM_ZEROBITS, &size,
+		           MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+		if (st == 0 && base) { g_heap = base; got = size; break; }
+	}
+
+	int usableChunks = (int)(got / CHUNK_SIZE);
+	if (usableChunks > CHUNK_COUNT) usableChunks = CHUNK_COUNT;
+
+	/* Mark reserved chunks free ('x'); any chunks beyond what we actually got are marked
+	   used ('a') so find_free() never hands out memory outside the reservation. */
+	for (int i = 0; i < CHUNK_COUNT; i++)
+		g_heapMap[i] = (i < usableChunks) ? 'x' : 'a';
+	g_heapMap[CHUNK_COUNT] = 0;
+	g_firstFreeChunk = (usableChunks > 0) ? g_heapMap : NULL;
+	g_xr_heap_reserved = got;
+
+	{
+		char m[160];
+		sprintf(m, "XR_INIT: LuaJIT low-2GB heap %p, reserved %Iu MB (%d/%d chunks), status=%lX\r\n",
+		        g_heap, got / (1024 * 1024), usableChunks, CHUNK_COUNT, st);
+		OutputDebugStringA(m);
+	}
 }
 
 void* XR_MMAP(size_t size)

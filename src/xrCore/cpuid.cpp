@@ -54,8 +54,8 @@ int _cpuid(_processor_info* pinfo)
 
 	std::bitset<32> f_1_ECX;
 	std::bitset<32> f_1_EDX;
-	/*std::bitset<32> f_7_EBX;
-	std::bitset<32> f_7_ECX;
+	std::bitset<32> f_7_EBX;
+	/*std::bitset<32> f_7_ECX;
 	std::bitset<32> f_81_ECX;*/
 	std::bitset<32> f_81_EDX;
 
@@ -87,11 +87,10 @@ int _cpuid(_processor_info* pinfo)
 	}
 
 	// load bitset with flags for function 0x00000007
-	/*if (nIds >= 7)
+	if (nIds >= 7)
 	{
-	f_7_EBX = data[7][1];
-	f_7_ECX = data[7][2];
-	}*/
+		f_7_EBX = data[7][1];
+	}
 
 	__cpuid(cpui.data(), 0x80000000);
 	const int nExIds_ = cpui[0];
@@ -125,10 +124,12 @@ int _cpuid(_processor_info* pinfo)
 	if (f_1_EDX[26]) pinfo->feature |= static_cast<u32>(_CPU_FEATURE_SSE2);
 	if (isAmd && f_81_EDX[31]) pinfo->feature |= static_cast<u32>(_CPU_FEATURE_3DNOW);
 
-	if (f_1_ECX[0]) pinfo->feature |= static_cast<u32>(_CPU_FEATURE_SSE3);
-	if (f_1_ECX[9]) pinfo->feature |= static_cast<u32>(_CPU_FEATURE_SSSE3);
+	if (f_1_ECX[0])  pinfo->feature |= static_cast<u32>(_CPU_FEATURE_SSE3);
+	if (f_1_ECX[9])  pinfo->feature |= static_cast<u32>(_CPU_FEATURE_SSSE3);
 	if (f_1_ECX[19]) pinfo->feature |= static_cast<u32>(_CPU_FEATURE_SSE4_1);
 	if (f_1_ECX[20]) pinfo->feature |= static_cast<u32>(_CPU_FEATURE_SSE4_2);
+	if (f_1_ECX[28]) pinfo->feature |= static_cast<u32>(_CPU_FEATURE_AVX);   // CPUID leaf 1 ECX[28]
+	if (f_7_EBX[5])  pinfo->feature |= static_cast<u32>(_CPU_FEATURE_AVX2);  // CPUID leaf 7 EBX[5]
 
 	__cpuid(cpui.data(), 1);
 

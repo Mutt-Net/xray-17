@@ -337,6 +337,12 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	m_cam_info.n.crossproduct(m_cam_info.d, m_cam_info.r);
 
 	float aspect = Device.fHeight_2 / Device.fWidth_2;
+	static bool s_camDimsLogged = false;
+	if (!s_camDimsLogged) {
+		Msg("* CAMERA: fWidth_2=%.1f fHeight_2=%.1f aspect(H/W)=%.4f fFOV_Dest=%.2f fASPECT_Dest=%.3f",
+		    Device.fWidth_2, Device.fHeight_2, aspect, fFOV_Dest, fASPECT_Dest);
+		s_camDimsLogged = true;
+	}
 	float src = 10 * Device.fTimeDelta;
 	clamp(src, 0.f, 1.f);
 	float dst = 1 - src;

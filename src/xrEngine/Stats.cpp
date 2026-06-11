@@ -168,6 +168,55 @@ void CStats::Show()
 		g_SpatialSpacePhysic->stat_remove.FrameEnd();
 	}
 
+	// CPU subsystem profiling (-gpuprofile): once/sec ranked breakdown of the per-frame
+	// CStat timers (smoothed ms). Pairs with the renderer's GPUPROF output to show the
+	// CPU side of the frame — the measurement that gates the AVX2/SIMD math work.
+	{
+		static bool s_cpuProfChecked = false;
+		static bool s_cpuProf = false;
+		if (!s_cpuProfChecked)
+		{
+			s_cpuProfChecked = true;
+			s_cpuProf = (strstr(Core.Params, "-gpuprofile") != nullptr);
+		}
+		if (s_cpuProf)
+		{
+			static float s_accum = 0.f;
+			s_accum += Device.fTimeDelta;
+			if (s_accum >= 1.f)
+			{
+				s_accum = 0.f;
+				struct CpuRow { const char* name; float ms; };
+				CpuRow rows[] = {
+					{ "Sheduler",        Sheduler.result },
+					{ "UpdateClient",    UpdateClient.result },
+					{ "Physics",         Physics.result },
+					{ "ph_collision",    ph_collision.result },
+					{ "ph_core",         ph_core.result },
+					{ "Animation",       Animation.result },
+					{ "AI_Think",        AI_Think.result },
+					{ "AI_Range",        AI_Range.result },
+					{ "AI_Path",         AI_Path.result },
+					{ "AI_Node",         AI_Node.result },
+					{ "AI_Vis",          AI_Vis.result },
+					{ "RenderCALC",      RenderCALC.result },
+					{ "RenderDUMP_SKIN", RenderDUMP_SKIN.result },
+					{ "Sound",           Sound.result },
+					{ "Input",           Input.result },
+				};
+				const int n = (int)(sizeof(rows) / sizeof(rows[0]));
+				for (int a = 0; a < n; ++a)
+					for (int b = a + 1; b < n; ++b)
+						if (rows[b].ms > rows[a].ms) { CpuRow t = rows[a]; rows[a] = rows[b]; rows[b] = t; }
+
+				Msg("* CPUPROF: per-frame CPU subsystems (EngineTOTAL %.2f ms)", EngineTOTAL.result);
+				for (int i = 0; i < n; ++i)
+					if (rows[i].ms >= 0.005f)
+						Msg("* CPUPROF:   %-16s %6.2f ms", rows[i].name, rows[i].ms);
+			}
+		}
+	}
+
 	// calc FPS & TPS
 	if (Device.fTimeDelta > EPS_S)
 	{

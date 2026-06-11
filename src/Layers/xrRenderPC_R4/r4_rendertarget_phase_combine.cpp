@@ -4,6 +4,8 @@
 #include <dxEnvironmentRender.h>
 #include <dx10EventWrapper.h>
 
+#include "../xrRender/dxProfiler.h"
+
 #define STENCIL_CULL 0
 
 void CRenderTarget::DoAsyncScreenshot()
@@ -99,12 +101,14 @@ void CRenderTarget::phase_combine()
 
 			if (RImplementation.o.ssfx_ao && ps_ssfx_ao.y > 0)
 			{
+				GPU_ZONE("C_AO");
 				ssfx_PrevPos_Requiered = true;
 				phase_ssfx_ao(); // [SSFX] - New AO Phase
 			}
 
 			if (RImplementation.o.ssfx_il && ps_ssfx_il.y > 0)
 			{
+				GPU_ZONE("C_IL");
 				ssfx_PrevPos_Requiered = true;
 				phase_ssfx_il(); // [SSFX] - New IL Phase
 			}
@@ -320,6 +324,7 @@ void CRenderTarget::phase_combine()
 
 	if (RImplementation.o.ssfx_ssr && !Device.m_SecondViewport.IsSVPFrame())
 	{
+		GPU_ZONE("C_SSR");
 		ssfx_PrevPos_Requiered = true;
 		phase_ssfx_ssr(); // [SSFX] - New SSR Phase
 	}
@@ -327,6 +332,7 @@ void CRenderTarget::phase_combine()
 	// [SSFX] - Water SSR rendering
 	if (RImplementation.o.ssfx_water && !Device.m_SecondViewport.IsSVPFrame())
 	{
+		GPU_ZONE("C_Water");
 		FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		HW.pContext->ClearRenderTargetView(rt_ssfx_temp->pRT, ColorRGBA);
 		HW.pContext->ClearRenderTargetView(rt_ssfx_temp2->pRT, ColorRGBA);

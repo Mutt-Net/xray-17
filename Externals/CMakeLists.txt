@@ -26,3 +26,8 @@ add_subdirectory(ReShadeCompat)
 add_subdirectory(robin_hood)
 add_subdirectory(StackWalker)
 add_subdirectory(TinyXML)
+
+if(Vulkan_FOUND)
+  add_subdirectory(VulkanMemoryAllocator)
+  add_subdirectory(DXC)
+endif()

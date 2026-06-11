@@ -104,6 +104,10 @@ set(XRAY_LINKER_FLAGS_DEBUG
 
 # Release linker options
 set(XRAY_LINKER_FLAGS_RELEASE
+    # Emit a PDB. Objects are already compiled with /Zi, but without /DEBUG the linker
+    # discards that info and the runtime crash handler can only print a raw address.
+    # /DEBUG is compatible with /OPT:REF/ICF and /LTCG (slower link, identical codegen).
+    /DEBUG
     # Enable COMDAT folding
     /OPT:ICF
     # Eliminate unreferenced functions and data

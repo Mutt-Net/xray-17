@@ -5,11 +5,11 @@
 #include <Render.h>
 #include <Shader.h>
 
-#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4) || (RENDER==R_R5) || (RENDER==R_R5)
 #include "light_package.h"
 #include "light_smapvis.h"
 #include "light_GI.h"
-#endif //(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif //(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4) || (RENDER==R_R5) || (RENDER==R_R5)
 
 extern Fvector4 ps_ssfx_volumetric;
 
@@ -52,7 +52,7 @@ public:
 
 	float virtual_size;
 
-#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4) || (RENDER==R_R5) || (RENDER==R_R5)
 	float			falloff;			// precalc to make light equal to zero at light range
 	float	        attenuation0;		// Constant attenuation		
 	float	        attenuation1;		// Linear attenuation		
@@ -68,11 +68,11 @@ public:
 	ref_shader		s_point;
 	ref_shader		s_volumetric;
 
-#if (RENDER==R_R3) || (RENDER==R_R4)
+#if (RENDER==R_R3) || (RENDER==R_R4) || (RENDER==R_R5)
 	ref_shader		s_spot_msaa[8];
 	ref_shader		s_point_msaa[8];
 	ref_shader		s_volumetric_msaa[8];
-#endif	//	(RENDER==R_R3) || (RENDER==R_R4)
+#endif	//	(RENDER==R_R3) || (RENDER==R_R4) || (RENDER==R_R5)
 
 	u32				m_xform_frame;
 	Fmatrix			m_xform;
@@ -110,7 +110,7 @@ public:
 			BOOL						transluent	;
 		}	S;
 	}	X;
-#endif	//	(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif	//	(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4) || (RENDER==R_R5) || (RENDER==R_R5)
 
 public:
 	virtual void set_type(LT type) { flags.type = type; }
@@ -158,14 +158,14 @@ public:
 	virtual IRender_Light* dcast_Light() { return this; }
 
 	vis_data& get_homdata();
-#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4) || (RENDER==R_R5) || (RENDER==R_R5)
 	void			gi_generate				();
 	void			xform_calc				();
 	void			vis_prepare				();
 	void			vis_update				();
 	void			export_					(light_Package& dest);
 	void			set_attenuation_params	(float a0, float a1, float a2, float fo);
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4) || (RENDER==R_R5) || (RENDER==R_R5)
 
 	float get_LOD();
 

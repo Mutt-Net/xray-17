@@ -59,6 +59,8 @@ extern BOOL DllMainXrRenderR1(HANDLE hModule, DWORD ul_reason_for_call, LPVOID l
 extern BOOL DllMainXrRenderR2(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved);
 extern BOOL DllMainXrRenderR3(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved);
 extern BOOL DllMainXrRenderR4(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved);
+extern BOOL DllMainXrRenderR5(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved);
+extern BOOL DllMainXrRenderR5Vk(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved);
 
 #ifdef STATIC_RENDERER_R1
     #define DLL_MAIN_RENDERER DllMainXrRenderR1
@@ -72,9 +74,39 @@ extern BOOL DllMainXrRenderR4(HANDLE hModule, DWORD ul_reason_for_call, LPVOID l
 #ifdef STATIC_RENDERER_R4
     #define DLL_MAIN_RENDERER DllMainXrRenderR4
 #endif
+#ifdef STATIC_RENDERER_R5
+    #define DLL_MAIN_RENDERER DllMainXrRenderR5
+#endif
+#ifdef STATIC_RENDERER_R5VK
+    #define DLL_MAIN_RENDERER DllMainXrRenderR5Vk
+#endif
 
 void CEngineAPI::InitializeNotDedicated()
 {
+#ifdef STATIC_RENDERER_R5VK
+    LPCSTR r5vk_name = "xrRender_R5VK.dll";
+    {
+        psDeviceFlags.set(rsR2, FALSE);
+        psDeviceFlags.set(rsR3, FALSE);
+        psDeviceFlags.set(rsR4, FALSE);
+        Log("Loading DLL:", r5vk_name);
+        DllMainXrRenderR5Vk(NULL, DLL_PROCESS_ATTACH, NULL);
+        g_current_renderer = 5;
+    }
+#endif
+
+#ifdef STATIC_RENDERER_R5
+    LPCSTR r5_name = "xrRender_R5.dll";
+    {
+        psDeviceFlags.set(rsR2, FALSE);
+        psDeviceFlags.set(rsR3, FALSE);
+        psDeviceFlags.set(rsR4, FALSE);
+        Log("Loading DLL:", r5_name);
+        DllMainXrRenderR5(NULL, DLL_PROCESS_ATTACH, NULL);
+        g_current_renderer = 5;
+    }
+#endif
+
 #ifdef STATIC_RENDERER_R4
 	LPCSTR r4_name = "xrRender_R4.dll";
 	//if (psDeviceFlags.test(rsR4))
@@ -226,6 +258,7 @@ extern "C" {
 typedef bool __cdecl SupportsAdvancedRenderingREF(void);
 typedef bool /*_declspec(dllexport)*/ SupportsDX10RenderingREF();
 typedef bool /*_declspec(dllexport)*/ SupportsDX11RenderingREF();
+typedef bool /*_declspec(dllexport)*/ SupportsDX12RenderingREF();
 };
 
 extern "C" {
@@ -238,6 +271,12 @@ bool SupportsDX10Rendering();
 #endif
 #ifdef STATIC_RENDERER_R4
 	bool SupportsDX11Rendering();
+#endif
+#ifdef STATIC_RENDERER_R5
+	bool SupportsDX12Rendering();
+#endif
+#ifdef STATIC_RENDERER_R5VK
+	bool SupportsVulkanRendering();
 #endif
 };
 
@@ -260,6 +299,8 @@ void CEngineAPI::CreateRendererList()
 	bool bSupports_r2_5 = false;
 	bool bSupports_r3 = false;
 	bool bSupports_r4 = false;
+	bool bSupports_r5 = false;
+	bool bSupports_vk = false;
 
 	if (strstr(Core.Params, "-perfhud_hack"))
 	{
@@ -326,6 +367,33 @@ void CEngineAPI::CreateRendererList()
             //FreeLibrary(hRender);
         }
 #endif
+
+#ifdef STATIC_RENDERER_R5
+        LPCSTR r5_name = "xrRender_R5.dll";
+        Log("Loading DLL:", r5_name);
+        SetErrorMode(SEM_FAILCRITICALERRORS);
+        DllMainXrRenderR5(NULL, DLL_PROCESS_ATTACH, NULL);
+        SetErrorMode(0);
+        {
+            SupportsDX12RenderingREF* test_dx12_rendering = SupportsDX12Rendering;
+            R_ASSERT(test_dx12_rendering);
+            bSupports_r5 = test_dx12_rendering();
+        }
+#endif
+
+#ifdef STATIC_RENDERER_R5VK
+        LPCSTR r5vk_name = "xrRender_R5VK.dll";
+        Log("Loading DLL:", r5vk_name);
+        SetErrorMode(SEM_FAILCRITICALERRORS);
+        DllMainXrRenderR5Vk(NULL, DLL_PROCESS_ATTACH, NULL);
+        SetErrorMode(0);
+        {
+            typedef bool SupportsVulkanRenderingREF();
+            SupportsVulkanRenderingREF* test_vk_rendering = SupportsVulkanRendering;
+            R_ASSERT(test_vk_rendering);
+            bSupports_vk = test_vk_rendering();
+        }
+#endif
 	}
 
 	//hRender = 0;
@@ -352,6 +420,16 @@ void CEngineAPI::CreateRendererList()
 	bool proceed = true;
 	if (proceed &= bSupports_r4, proceed)
         _tmp.push_back("renderer_r4");
+#endif
+#ifdef STATIC_RENDERER_R5
+	bool proceed = true;
+	if (proceed &= bSupports_r5, proceed)
+        _tmp.push_back("renderer_r5");
+#endif
+#ifdef STATIC_RENDERER_R5VK
+	bool proceed = true;
+	if (proceed &= bSupports_vk, proceed)
+        _tmp.push_back("renderer_r5vk");
 #endif
 
 	R_ASSERT2(_tmp.size() != 0, "No valid renderer found, please use a render system that's supported by your PC");

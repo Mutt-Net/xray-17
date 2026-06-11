@@ -1,9 +1,14 @@
 #include <defines.h>
+#include <xrCore.h>
 
 #include "R_Backend_Runtime.h"
 #include "dxRenderDeviceRender.h"
 #include "ResourceManager.h"
 #include "xrRender_console.h"
+#include "dxProfiler.h"
+
+// Single definition of the GPU profiler global (declared extern in dxProfiler.h).
+dxGPUProfiler GPUProfiler;
 
 dxRenderDeviceRender::dxRenderDeviceRender()
 	: Resources(0)
@@ -89,6 +94,9 @@ void dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& 
 
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
+	Msg("* RENDER: ResetTotal dims %ux%u (half %.1fx%.1f, aspect H/W=%.4f)",
+	    dwWidth, dwHeight, fWidth_2, fHeight_2,
+	    dwWidth ? (float)dwHeight / (float)dwWidth : 0.f);
 	Resources->reset_end();
 
 #ifdef DEBUG
@@ -187,6 +195,9 @@ void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float&
 #endif	//	USE_DX10
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
+	Msg("* RENDER: Create dims %ux%u (half %.1fx%.1f, aspect H/W=%.4f)",
+	    dwWidth, dwHeight, fWidth_2, fHeight_2,
+	    dwWidth ? (float)dwHeight / (float)dwWidth : 0.f);
 	Resources = xr_new<CResourceManager>();
 }
 
@@ -304,6 +315,7 @@ dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {
 	HW.Validate();
 #if defined(USE_DX10) || defined(USE_DX11)
+# if !defined(USE_VK)
     HRESULT _hr = HW.m_pSwapChain->Present(0, DXGI_PRESENT_TEST);
 
 	if (FAILED(_hr))
@@ -317,6 +329,7 @@ dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 		if (DXGI_ERROR_DEVICE_RESET == _hr)
 			return dsNeedReset;
 	}
+# endif // !USE_VK
 #else	//	USE_DX10
 	HRESULT _hr = HW.pDevice->TestCooperativeLevel();
 
@@ -347,6 +360,19 @@ u32 dxRenderDeviceRender::GetCacheStatPolys()
 
 void dxRenderDeviceRender::Begin()
 {
+#if defined(USE_DX10) || defined(USE_DX11)
+	// One-time: enable the GPU profiler when launched with -gpuprofile.
+	static bool s_profChecked = false;
+	if (!s_profChecked)
+	{
+		s_profChecked = true;
+		GPUProfiler.SetEnabled(strstr(Core.Params, "-gpuprofile") != nullptr);
+		if (GPUProfiler.Enabled())
+			Msg("* GPUPROF: enabled (-gpuprofile) — per-phase GPU timing + resource snapshot, 1s interval");
+	}
+	GPUProfiler.FrameBegin(HW.pDevice, HW.pContext);
+#endif
+
 #if !defined(USE_DX10) && !defined(USE_DX11)
 	CHK_DX(HW.pDevice->BeginScene());
 #endif	//	USE_DX10
@@ -391,21 +417,62 @@ void dxRenderDeviceRender::End()
 	DoAsyncScreenshot();
 
 #if defined(USE_DX10) || defined(USE_DX11)
+	// GPU profiler: close the frame (before present so the queries flush with it).
+	// On the 1s report tick, append a resource snapshot (VRAM + texture memory).
+	if (GPUProfiler.FrameEnd(Device.fTimeDelta))
+	{
+#  if defined(USE_DX11)
+		if (HW.m_pAdapter)
+		{
+			IDXGIAdapter3* a3 = nullptr;
+			if (SUCCEEDED(HW.m_pAdapter->QueryInterface(IID_PPV_ARGS(&a3))) && a3)
+			{
+				DXGI_QUERY_VIDEO_MEMORY_INFO vmi{};
+				if (SUCCEEDED(a3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &vmi)))
+					Msg("* GPUPROF:   VRAM %u MB used / %u MB budget",
+						(u32)(vmi.CurrentUsage / (1024 * 1024)),
+						(u32)(vmi.Budget / (1024 * 1024)));
+				a3->Release();
+			}
+		}
+#  endif
+		if (Resources)
+		{
+			u32 m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
+			Resources->_GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+			Msg("* GPUPROF:   textures %u MB (%u objs) + lightmaps %u MB (%u objs)",
+				m_base / (1024 * 1024), c_base, m_lmaps / (1024 * 1024), c_lmaps);
+		}
+	}
+#endif
+
+#if defined(USE_DX10) || defined(USE_DX11)
+# if defined(USE_VK)
+	if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.isCamReady) {
+		HW.VKPresent();
+	}
+# else
     UINT present_flags = 0;
 	bool use_vsync = !!psDeviceFlags.test(rsVSync);
 	UINT present_interval = (use_vsync) ? 1 : 0;
 
-# if defined(USE_DX11)
+#  if defined(USE_DX11)
 	// NOTE: https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/variable-refresh-rate-displays
     BOOL is_windowed = HW.m_ChainDescFullscreen.Windowed;
 	if (is_windowed && !use_vsync && HW.m_SupportsVRR) {
         present_flags |= DXGI_PRESENT_ALLOW_TEARING;
 	}
-# endif
+#  endif
 
 	if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.isCamReady) {
+#  if defined(USE_DX12)
+		// D3D11On12 requires the acquire/copy/release/flush handshake before Present.
+		HW.Present12(present_interval, present_flags);
+#  else
 		HW.m_pSwapChain->Present(present_interval, present_flags);
+#  endif
 	}
+# endif // USE_VK
 #else //!USE_DX10 || USE_DX11
 	CHK_DX(HW.pDevice->EndScene());
 

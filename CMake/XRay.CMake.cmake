@@ -15,6 +15,14 @@ include(XRay.Configs)
 # Setup AVX support
 include(XRay.AVX)
 
+# Vulkan SDK (optional — gates Anomaly.Vulkan target)
+find_package(Vulkan QUIET)
+if(Vulkan_FOUND)
+  message(STATUS "     Vulkan SDK: ${Vulkan_VERSION}")
+else()
+  message(STATUS "     Vulkan SDK: Not found — install LunarG Vulkan SDK to enable Anomaly.Vulkan")
+endif()
+
 # Setup compiler
 include(XRay.Compiler)
 

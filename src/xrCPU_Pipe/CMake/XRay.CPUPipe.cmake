@@ -63,8 +63,18 @@ add_module(XRay.CPUPipe.Resources
 add_module(XRay.CPUPipe.Skinning
   SOURCES
   xrSkin2W.cpp
-  xrSkin2W_SSE.cpp
+  xrSkin2W_SSE.cpp        # historical 32-bit asm, wrapped in #if 0
+  xrSkin2W_SSE2.cpp       # SSE2 C++ intrinsics (x64)
+  xrSkin2W_AVX2.cpp       # AVX2+FMA C++ intrinsics (x64)
   xrSkin2W_thread.cpp
+)
+
+# Force /arch:AVX2 on the AVX2 file regardless of build preset.
+# Runtime CPUID check in xrCPU_Pipe.cpp ensures these functions only
+# run on AVX2-capable hardware even when built in the base preset.
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/xrSkin2W_AVX2.cpp
+  PROPERTIES COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
 )
 
 add_module(XRay.CPUPipe.TTAPI

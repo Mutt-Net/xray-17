@@ -205,7 +205,7 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		case 1:
 			vsname = psname = "model_env_lq";
 
-#if RENDER==R_R4
+#if RENDER==R_R4 || RENDER==R_R5
 			if (RImplementation.o.ssfx_glass && !C.HudElement)
 				vsname = psname = "ssfx_glass";
 #endif
@@ -215,7 +215,7 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Texture("s_env", oT2_Name);
 
-#if RENDER==R_R4
+#if RENDER==R_R4 || RENDER==R_R5
 			if (RImplementation.o.ssfx_glass)
 			{
 				C.r_dx10Texture("s_accumulator", r2_RT_accum);
