@@ -525,11 +525,24 @@ void CHW::WaitForGpu()
         return;
 
     const UINT64 fence = m_nFenceValue12++;
-    R_CHK(m_pCommandQueue12->Signal(m_pFence12, fence));
+    HRESULT hr = m_pCommandQueue12->Signal(m_pFence12, fence);
+    if (FAILED(hr)) {
+        Msg("! DX12: WaitForGpu Signal failed (hr=0x%08X, removed=0x%08X)",
+            hr, pDevice12->GetDeviceRemovedReason());
+        return;
+    }
 
     if (m_pFence12->GetCompletedValue() < fence) {
         R_CHK(m_pFence12->SetEventOnCompletion(fence, m_hFenceEvent12));
-        WaitForSingleObjectEx(m_hFenceEvent12, INFINITE, FALSE);
+        // Bounded wait: a healthy queue drains in milliseconds. INFINITE here wedged
+        // the main thread when the device was lost mid-wait (no fence signal, no
+        // frame, black screen - watchdog-confirmed in-field 2026-06-11).
+        const DWORD wr = WaitForSingleObjectEx(m_hFenceEvent12, 5000, FALSE);
+        if (wr != WAIT_OBJECT_0) {
+            Msg("! DX12: WaitForGpu timed out (wait=0x%X, removed=0x%08X) - abandoning wait",
+                wr, pDevice12->GetDeviceRemovedReason());
+            FlushLog();
+        }
     }
 }
 
@@ -539,6 +552,25 @@ void CHW::WaitForGpu()
 
 void CHW::Present12(UINT present_interval, UINT present_flags)
 {
+    // Device-removed gate: keep feeding the 11on12 runtime on a dead device and its
+    // internal waits never return - main thread stalls with a black screen and the
+    // machine looks frozen (watchdog-confirmed in-field 2026-06-11, triggered by an
+    // external app perturbing the adapter while the game was occluded). X-Ray has no
+    // device-recreate path, so fail fast and visibly instead.
+    {
+        const HRESULT removed = pDevice12->GetDeviceRemovedReason();
+        if (FAILED(removed)) {
+            Msg("! DX12: device removed (reason=0x%08X) - cannot continue", removed);
+            FlushLog();
+            MessageBox(nullptr,
+                "The graphics device was removed or reset (driver crash or GPU hang).\n"
+                "The game cannot continue - please restart it.\n"
+                "See the log for the DXGI removal reason.",
+                "Fatal graphics error", MB_OK | MB_ICONERROR);
+            TerminateProcess(GetCurrentProcess(), 1);
+        }
+    }
+
     // Flip-model: the writable back buffer changes after every Present, so re-query it.
     m_nFrameIndex12 = static_cast<IDXGISwapChain3*>(m_pSwapChain)->GetCurrentBackBufferIndex();
     ID3D11Resource* backBuffer = m_pWrappedBackBuffers12[m_nFrameIndex12];
@@ -561,7 +593,21 @@ void CHW::Present12(UINT present_interval, UINT present_flags)
 
     // Submit the recorded 11on12 commands to the DX12 queue, then present.
     pContext->Flush();
-    m_pSwapChain->Present(present_interval, present_flags);
+    const HRESULT hr = m_pSwapChain->Present(present_interval, present_flags);
+    if (hr == DXGI_STATUS_OCCLUDED) {
+        // Fully occluded (minimised/covered): nothing to show, don't spin the queue.
+        Sleep(10);
+    } else if (FAILED(hr)) {
+        // DEVICE_REMOVED/RESET surfaces here first on most drivers; the gate above
+        // turns it into a clean exit on the next frame. Log every distinct failure.
+        static HRESULT s_lastPresentError = S_OK;
+        if (hr != s_lastPresentError) {
+            s_lastPresentError = hr;
+            Msg("! DX12: Present failed (hr=0x%08X, removed=0x%08X)",
+                hr, pDevice12->GetDeviceRemovedReason());
+            FlushLog();
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
