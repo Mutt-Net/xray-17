@@ -14,6 +14,7 @@
 #include <D3DX10Tex.h>
 #elif defined(USE_DX11)
 #include <D3DX11Tex.h>
+#include "dx10DDSLoad.h"
 #endif
 
 // #include "std_classes.h"
@@ -401,6 +402,27 @@ _DDS:
 #endif // DEBUG
 		img_size = S->length();
 		R_ASSERT(S);
+
+#ifdef USE_DX11
+		_strlwr(fn); // match get_texture_load_lod's lowercase reduce-list keys
+		// ZONE native modern-DDS path (BC1-7 + DXT10). Intercept BEFORE D3DX11,
+		// which cannot LOD-filter BC7/BC6H and asserts on some DXT10 headers.
+		// Handles 2D block-compressed only; declines (false) -> D3DX11 fallback
+		// for cube/uncompressed, leaving the legacy path untouched.
+		{
+			unsigned native_mips = 0;
+			ID3D11Resource* native_tex = nullptr;
+			if (DDSNative_Load2D(S->pointer(), S->length(), get_texture_load_lod(fn),
+			                     HW.pDevice, &native_tex, native_mips))
+			{
+				FS.r_close(S);
+				mip_cnt = native_mips;
+				ret_msize = calc_texture_size(get_texture_load_lod(fn), mip_cnt, img_size);
+				return native_tex;
+			}
+		}
+#endif
+
 		//R_CHK2					(D3DXGetImageInfoFromFileInMemory	(S->pointer(),S->length(),&IMG), fn);
 #ifdef USE_DX11
 		R_CHK2(D3DX11GetImageInfoFromMemory(S->pointer(),S->length(), 0, &IMG, 0), fn);

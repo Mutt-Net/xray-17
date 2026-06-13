@@ -113,6 +113,8 @@ add_module(XRay.Render.R4.3DFluid
 
 add_module(XRay.Render.R4.Core
   SOURCES
+  ../xrRenderDX10/dx10DDSLoad.cpp
+  ../xrRenderDX10/dx10DDSLoad.h
   ../xrRenderDX10/dx10Texture.cpp
   ../xrRender/particles_systems_library_interface.hpp
   ../xrRender/PSLibrary.cpp
