@@ -240,6 +240,37 @@ public:
 };
 
 //-----------------------------------------------------------------------
+// ZONE: cfg_save was a synchronous disk write on the main thread (open + flush
+// + rename + attrib of user.ltx, aggravated by AV scanning) - a frame hitch on
+// every MCM apply. Fix: serialize the console vars to memory on the main thread
+// (fast; must stay here, it reads live command state), then offload the disk
+// write to a worker doing an atomic temp-write + rename via raw Win32 (no FS
+// subsystem off-thread, so no FS thread-safety concern). An in-flight guard
+// sends any overlapping save down a synchronous fallback rather than queueing.
+struct zone_cfg_save_payload { string_path filename; u8* data; u32 size; };
+static volatile LONG zone_cfg_save_in_flight = 0;
+
+static void zone_cfg_save_worker(void* arg)
+{
+	zone_cfg_save_payload* p = (zone_cfg_save_payload*)arg;
+	string_path tmp;
+	xr_strcpy(tmp, p->filename);
+	xr_strcat(tmp, ".tmp");
+	HANDLE h = CreateFile(tmp, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (h != INVALID_HANDLE_VALUE)
+	{
+		DWORD written = 0;
+		WriteFile(h, p->data, p->size, &written, NULL);
+		CloseHandle(h);
+		MoveFileEx(tmp, p->filename, MOVEFILE_REPLACE_EXISTING);
+	}
+	else
+		Msg("!cfg_save (async): cannot write [%s]", p->filename);
+	xr_free(p->data);
+	xr_delete(p);
+	InterlockedExchange(&zone_cfg_save_in_flight, 0);
+}
+
 class CCC_SaveCFG : public IConsole_Command
 {
 public:
@@ -265,12 +296,35 @@ public:
 
 		if (b_allow)
 		{
-			IWriter* F = FS.w_open(cfg_full_name);
+			// Serialize on the main thread (reads live console-var state).
+			CMemoryWriter mem;
 			CConsole::vecCMD_IT it;
 			for (it = Console->Commands.begin(); it != Console->Commands.end(); it++)
-				it->second->Save(F);
-			FS.w_close(F);
-			Msg("Config-file [%s] saved successfully", cfg_full_name);
+				it->second->Save(&mem);
+
+			if (InterlockedCompareExchange(&zone_cfg_save_in_flight, 1, 0) == 0)
+			{
+				// Hand the serialized buffer to a worker; the disk write (the
+				// hitch) leaves the main thread.
+				zone_cfg_save_payload* p = xr_new<zone_cfg_save_payload>();
+				xr_strcpy(p->filename, cfg_full_name);
+				p->size = mem.size();
+				p->data = (u8*)xr_malloc(p->size ? p->size : 1);
+				if (p->size)
+					CopyMemory(p->data, mem.pointer(), p->size);
+				thread_spawn(zone_cfg_save_worker, "cfg-save", 0, p);
+			}
+			else
+			{
+				// Previous async save still writing - sync fallback (rare).
+				IWriter* F = FS.w_open(cfg_full_name);
+				if (F)
+				{
+					if (mem.size())
+						F->w(mem.pointer(), mem.size());
+					FS.w_close(F);
+				}
+			}
 		}
 		else
 			Msg("!Cannot store config file [%s]", cfg_full_name);
